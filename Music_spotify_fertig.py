@@ -30,11 +30,13 @@ spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 SEARCH_PLAYLIST_ENDPOINT ='https://api.spotify.com/v1/search?type=playlist'
 AUDIO_FEATURES_ENDPOINT = 'https://api.spotify.com/v1/audio-features/{id}'
 
+
 def generate_token():
     """ Generate the token."""
     credentials = SpotifyClientCredentials(client_id='f8cb48bb9bd0490ea739c35ede219adf', client_secret='e3480061bd7b4e63ac8de04b856b0b18')
     token = credentials.get_access_token()
     return token
+
 
 # function for searching for playlist by name
 def search_playlist(name):
@@ -44,6 +46,7 @@ def search_playlist(name):
     resp = requests.get(SEARCH_PLAYLIST_ENDPOINT, params=myparams, headers={"Authorization": "Bearer {}".format(token)})
     return resp.json()
 
+
 # function for playing songs from the playlist
 def get_audio_features(track_id):
     token = generate_token()
@@ -51,26 +54,27 @@ def get_audio_features(track_id):
     resp = requests.get(url, headers={"Authorization": "Bearer {}".format(token)})
     return resp.json()
 
+
 # input variable from eyetracking
-input = 'happy'
+eye_input = 'happy'
 
 # loop for differentiating between the 4 input modi and what will be triggered in spotify
-if input == 'happy': # in case eyetracking input was happy
+if eye_input == 'happy': # in case eyetracking input was happy
     playlist = search_playlist('Happy Beats')
     items = playlist['playlists']['items'][0]['tracks']
     for i in items:
         get_audio_features(i) # play all songs in playlist
-elif input == 'chillen': # in case eyetracking input was chillen
+elif eye_input == 'chillen': # in case eyetracking input was chillen
     playlist = search_playlist('STEVIE MC CRORIE - Best Of') 
     items = playlist['playlists']['items'][0]['tracks']
     for i in items:
         get_audio_features(i) # play all songs in playlist
-elif input == 'party': # in case eyetracking input was party
+elif eye_input == 'party': # in case eyetracking input was party
     playlist = search_playlist('Sonne, Mond und Sterne 2018')
     items = playlist['playlists']['items'][0]['tracks']
     for i in items:
         get_audio_features(i) # play all songs in playlist
-elif input == 'sad': # in case eyetracking input was sad
+elif eye_input == 'sad': # in case eyetracking input was sad
     playlist = search_playlist('Sad Songs')
     items = playlist['playlists']['items'][0]['tracks']
     for i in items:
