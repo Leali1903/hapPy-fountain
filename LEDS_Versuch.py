@@ -94,4 +94,4 @@ while True:
     pixels.show()
     time.sleep(1)
 
-    rainbow_cycle_blue(0.001) 
+    rainbow_cycle_blue(0.001)

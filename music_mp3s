@@ -1,5 +1,41 @@
 import pygame
+import glob, os
+
 pygame.mixer.init()
+
+def find_tracks(folder):
+    os.chdir(folder)
+    for file in glob.glob("*.mp3"):
+    tracks = tracks.appends(file)
+
+
+if eye_input == 'happy': # in case eyetracking input was happy
+    find_tracks("/happy")
+    pygame.mixer.music.load(tracks)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+    continue
+elif eye_input == 'chillen': # in case eyetracking input was chillen
+    find_tracks("/chillen")
+    pygame.mixer.music.load(tracks)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+    continue
+elif eye_input == 'party': # in case eyetracking input was party
+    find_tracks("/party")
+    pygame.mixer.music.load(tracks)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+    continue
+elif eye_input == 'sad': # in case eyetracking input was sad
+    pfind_tracks("/sad")
+    pygame.mixer.music.load(tracks)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+    continue
+else:
+    print('Error: No Input received!')
+
 pygame.mixer.music.load("myFile.wav")
 pygame.mixer.music.play()
 while pygame.mixer.music.get_busy() == True:
