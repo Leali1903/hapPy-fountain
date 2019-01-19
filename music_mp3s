@@ -10,25 +10,25 @@ def find_tracks(folder):
 
 
 if eye_input == 'happy': # in case eyetracking input was happy
-    find_tracks("/happy")
+    find_tracks("/home/pi/Music/happy")
     pygame.mixer.music.load(tracks)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy() == True:
     continue
 elif eye_input == 'chillen': # in case eyetracking input was chillen
-    find_tracks("/chillen")
+    find_tracks("/home/pi/Music/chillen")
     pygame.mixer.music.load(tracks)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy() == True:
     continue
 elif eye_input == 'party': # in case eyetracking input was party
-    find_tracks("/party")
+    find_tracks("/home/pi/Music/party")
     pygame.mixer.music.load(tracks)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy() == True:
     continue
 elif eye_input == 'sad': # in case eyetracking input was sad
-    pfind_tracks("/sad")
+    pfind_tracks("/home/pi/Music/sad")
     pygame.mixer.music.load(tracks)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy() == True:
