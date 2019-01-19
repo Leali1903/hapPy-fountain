@@ -1,6 +1,7 @@
 import time
 import board
 import neopixel
+import random
 
 
 # Choose an open pin connected to the Data In of the NeoPixel strip, i.e. board.D18
@@ -48,13 +49,17 @@ def rainbow_cycle(wait):
         pixels.show()
         time.sleep(wait)
 
-    def rainbow_cycle_blue(wait):
-        for j in range(255):
+def rainbow_cycle_blue(wait):
+    for j in range(255):
+        if j < 50:
+            j = 255
+        else:
             for i in range(num_pixels):
                 pixel_index = (i * 256 // num_pixels) + j
                 pixels[i] = wheel_blue(pixel_index & 255)
-            pixels.show()
-            time.sleep(wait)
+                #pixels[i] = wheel_blue(pixel_index)
+    pixels.show()
+    time.sleep(wait)
 
     # blau Hex 
     # 0,0,255
@@ -68,21 +73,24 @@ def wheel_blue(pos):
     # Input a value 0 to 255 to get a color value.
     # The colours are a transition r - g - b - back to r.
     if pos < 0 or pos > 255:
-        r = g = b = 0
+        r = b = g = 0
     elif pos < 85:
         r = 0
-        g = int(255 - pos*3)
-        b = 255
+        #g = 205
+        b = random.randint(100,255)
+        g = 0
     elif pos < 170:
         pos -= 85
         r = 0
-        g = int(pos*3)
-        b = 255
+        #g = 238
+        b = random.randint(50,255)
+        g = 0
     else:
         pos -= 170
         r = 0
-        g = int(pos+15)
-        b = 255
+        #g = 255
+        b = random.randint(150,255)
+        g = 0
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
 
@@ -91,7 +99,7 @@ while True:
     pixels.fill((0, 0, 255))
     # Uncomment this line if you have RGBW/GRBW NeoPixels
     # pixels.fill((0, 0, 255, 0))
+    
+    #time.sleep(0)
+    rainbow_cycle_blue(0.0000000000000001)
     pixels.show()
-    time.sleep(1)
-
-    rainbow_cycle_blue(0.001)
