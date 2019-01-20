@@ -2,30 +2,31 @@ import math
 import numpy as np
 
 # data_sample = [[x, y, z], [x, y, z], [x, y, z]]
-# time_movement_start = 0 # = Startzeitpunkt der Bewegung
-# time_movement_end = 1 # = Endzeitpunkt der Bewegung
+# TIME_MOVEMENT_START = 0 # = Startzeitpunkt der Bewegung
+# TIME_MOVEMENT_END = 1 # = Endzeitpunkt der Bewegung
 
 
 def extract_samples(data):
     eye_movement_samples = []
-    for sample in data_sample:
-        if sample[0] == time_movement_start:
-            while sample[0] != time_movement_end:
-                eye_movement_samples = eye_movement_samples.append(sample)
+    for sample in data:
+        if sample[0] >= TIME_MOVEMENT_START:
+            if sample[0] <= TIME_MOVEMENT_END:
+                eye_movement_samples.append(sample)
+            else:
+                break
     return eye_movement_samples
 
 
 def correlation(x, y):
     sd_x = np.sqrt(np.var(x))
     sd_y = np.sqrt(np.var(y))
-    r = np.cov(x,y)/(sd_x * sd_y)
-    return r
+    return np.cov(x,y)/(sd_x * sd_y)
 
 
 while GUI == 'on':
     extract_samples(data_sample)
-    eye_movement_x = eye_movement_sample[0][0] - eye_movement_sample[-1][0]
-    eye_movement_y = eye_movement_sample[0][1] - eye_movement_sample[-1][1]
+    eye_movement_x = eye_movement_sample[0][1] - eye_movement_sample[-1][1]
+    eye_movement_y = eye_movement_sample[0][2] - eye_movement_sample[-1][2]
     movement_xy = math.sqrt(eye_movement_x**2 + eye_movement_y**2)
 
     eye_x = eye_movement_samples[:][0]

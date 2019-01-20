@@ -19,7 +19,7 @@ pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.2, auto_write=Fal
 def wheel_color(pos):
     # Input von verschieden Values zwischen 0 und 255 für RGB-Werte
     # Farben = Übergänge von rot zu gelb zu blau und wieder zu rot
-     if pos < 0 or pos > 255: #input-check nicht null oder kleiner oder größer 250
+    if pos < 0 or pos > 255: #input-check nicht null oder kleiner oder größer 250
         r = b = g = 0 #falls doch RGB alle null --> LEDs aus.
     elif pos < 85: # generieren von rot-gelb-Tönen für ein Drittel der LEDs
         r = int(pos * 3)
