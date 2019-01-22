@@ -17,7 +17,6 @@ ORDER = neopixel.GRB
 pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.2, auto_write=False,
                            pixel_order=ORDER)
 
-
 def wheel_color(pos):
     # Input von verschieden Values zwischen 0 und 255 für RGB-Werte
     # Farben = Übergänge von rot zu gelb zu blau und wieder zu rot

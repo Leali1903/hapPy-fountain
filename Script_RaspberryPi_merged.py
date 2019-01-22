@@ -151,7 +151,6 @@ def find_play_tracks(folder):
 ###################### STEUERUNG JE NACH INPUT ######################
 
 if eye_input == 'happy':
-
     os.system(ON)
     time.sleep(60)  # rausnehmen weil nach Liedern ausgeschaltet
     os.system(OFF)
