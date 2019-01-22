@@ -26,6 +26,10 @@ if eye_input == 'happy':
     ### MUSIK ###
     folder = "/home/pi/Music/happy/"
     tracks = find_play_tracks(folder)
+    tracksIterator = iter(tracks)
+    firstTrack = next(tracks)
+    pygame.mixer.music.load(firstTrack)
+    pygame.mixer.music.play()
     for track in tracks:
         pygame.mixer.music.queue(track)
     
