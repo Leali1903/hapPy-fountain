@@ -7,7 +7,14 @@ def find_play_tracks(folder):
                 print(file)
                 tracks.append(file)
     return tracks
-    
+   
+def play_tracks(tracks):
+    tracksIterator = iter(tracks)
+    firstTrack = next(tracksIterator)
+    pygame.mixer.music.load(firstTrack)
+    pygame.mixer.music.play()
+    for track in tracksIterator:
+        pygame.mixer.music.queue(track)
     
  
     
@@ -25,14 +32,18 @@ if eye_input == 'happy':
     os.system(OFF)
     ### MUSIK ###
     folder = "/home/pi/Music/happy/"
-    tracks = find_play_tracks(folder)
-    tracksIterator = iter(tracks)
-    firstTrack = next(tracks)
-    pygame.mixer.music.load(firstTrack)
-    pygame.mixer.music.play()
-    for track in tracks:
-        pygame.mixer.music.queue(track)
-    
+    tracks = find_tracks(folder)
+    play_tracks(tracks)
+     next_track_index = 0
+    # ### LED LICHTERKETTE ###
+    while True:  # weil es sich immer weiter bewegen soll.
+         cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
+         if pygame.mixer.music.get_busy() == False:
+            pygame.mixer.music.load(folder + tracks[next_track_index])
+            pygame.mixer.music.play()
+            next_track_index += 1
+         if next_track_index >= len(tracks):
+            break
     # ### LED LICHTERKETTE ###
     while True:  # weil es sich immer weiter bewegen soll.
          cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
