@@ -141,9 +141,6 @@ def chill_color(pos):
         g = 139
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
-if __musicAndColor__ == '__main__':
-    Thread(target = find_play_tracks(folder)).start()
-    Thread(target = cycle(0.001, wheel_color)).start()
 
 ### MUSIK FUNKTIONEN ###
 
@@ -173,10 +170,15 @@ if eye_input == 'happy':
     os.system(OFF)
     ### MUSIK ###
     folder = "/home/pi/Music/happy/"
-    tracks = find_play_tracks(folder)
-    ### LED LICHTERKETTE ###
-    while True:  # weil es sich immer weiter bewegen soll.
-        cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
+    # tracks = find_play_tracks(folder)
+    # ### LED LICHTERKETTE ###
+    # while True:  # weil es sich immer weiter bewegen soll.
+    #     cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
+    music = Thread(target=find_play_tracks(folder))
+    music.start()
+    led = Thread(target=cycle(0.001, wheel_color))
+    led.start()
+    music.join()
 
 elif eye_input == 'sad':
     ### BRUNNEN ###

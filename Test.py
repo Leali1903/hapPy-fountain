@@ -59,20 +59,24 @@ def wheel_color(pos):
 
 
 # Funktion zur Bewegung der Farben im Sad & Happy-Modus
-def cycle(wait, wheel):
-    while True:
-        for j in range(255):
-            for i in range(num_pixels):
-                pixel_index = (i * 256 // num_pixels) + j  # bewegen des 'wheels'
-                pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
-            if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
+class led(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+
+    def cycle(wait, wheel, self):
+        while True:
+            for j in range(255):
+                for i in range(num_pixels):
+                    pixel_index = (i * 256 // num_pixels) + j  # bewegen des 'wheels'
+                    pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
+                if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
+                    print(pixels)
+                    pixels.show()
+                    time.sleep(wait)
+            if wheel == wheel_blue:  # 'Wasserbewegung' für das blaue Wheel
                 print(pixels)
                 pixels.show()
                 time.sleep(wait)
-        if wheel == wheel_blue:  # 'Wasserbewegung' für das blaue Wheel
-            print(pixels)
-            pixels.show()
-            time.sleep(wait)
 
 
 # Funktion zur Verteilung der Farben im Sad-Modus
@@ -141,26 +145,39 @@ def chill_color(pos):
         g = 139
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
-if __musicAndColor__ == '__main__':
-    Thread(target = find_play_tracks(folder)).start()
-    Thread(target = cycle(0.001, wheel_color)).start()
-
-
 
 ### MUSIK FUNKTIONEN ###
 
 # Funktion zum suchen und abspielen der Tracks
-def find_play_tracks(folder):
-    for root, dirs, files in os.walk(folder):
-        for tracks in files:
-            if tracks.endswith(".mp3"):
-                print(tracks)
-                pygame.mixer.music.load(folder + tracks)
-                pygame.mixer.music.play()
-            while pygame.mixer.music.get_busy() == True:
-                continue
-    return tracks
+class music(Thread):
+    def __init__(self):
+        Thread.__init__(self)
 
+    def find_play_tracks(folder, self):
+        for root, dirs, files in os.walk(folder):
+            for tracks in files:
+                if tracks.endswith(".mp3"):
+                    print(tracks)
+                    pygame.mixer.music.load(folder + tracks)
+                    pygame.mixer.music.play()
+                while pygame.mixer.music.get_busy() == True:
+                    continue
+        return tracks
+
+
+from threading import Thread
+
+folder = "/home/pi/Music/happy/"
+wheel = wheel_color()
+wait = 0.0001
+
+
+if __name__ == '__main__':
+    a = led()
+    b = music()
+
+    a.start()
+    b.start()
 
 ###################### STEUERUNG JE NACH INPUT ######################
 
