@@ -4,6 +4,7 @@ import board
 import neopixel
 import random
 import pygame
+from threading import Thread
 
 eye_input = 'party'
 
@@ -59,18 +60,19 @@ def wheel_color(pos):
 
 # Funktion zur Bewegung der Farben im Sad & Happy-Modus
 def cycle(wait, wheel):
-    for j in range(255):
-        for i in range(num_pixels):
-            pixel_index = (i * 256 // num_pixels) + j  # bewegen des 'wheels'
-            pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
-        if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
+    while True:
+        for j in range(255):
+            for i in range(num_pixels):
+                pixel_index = (i * 256 // num_pixels) + j  # bewegen des 'wheels'
+                pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
+            if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
+                print(pixels)
+                pixels.show()
+                time.sleep(wait)
+        if wheel == wheel_blue:  # 'Wasserbewegung' für das blaue Wheel
             print(pixels)
             pixels.show()
             time.sleep(wait)
-    if wheel == wheel_blue:  # 'Wasserbewegung' für das blaue Wheel
-        print(pixels)
-        pixels.show()
-        time.sleep(wait)
 
 
 # Funktion zur Verteilung der Farben im Sad-Modus
@@ -139,6 +141,9 @@ def chill_color(pos):
         g = 139
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
+if __musicAndColor__ == '__main__':
+    Thread(target = find_play_tracks(folder)).start()
+    Thread(target = cycle(0.001, wheel_color)).start()
 
 ### MUSIK FUNKTIONEN ###
 
