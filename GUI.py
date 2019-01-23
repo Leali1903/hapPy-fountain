@@ -14,42 +14,66 @@ SCREEN_HEIGHT = 1080
 SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH % 2), (SCREEN_HEIGHT % 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & auf Bildschirmeinstellungen gesetzt
+screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
 
 # Farb- & Texteinstellungen
 BLACK = (0, 0, 0)                                              # schwarz für Boxen & Texte
 WHITE = (255, 255, 255)                                        # weiß für Boxen & Texte
 HF_BLUE = (79, 154, 196)
+HF_BLUE_LIGHT = (120, 200, 200)
 MYFONT = pygame.font.SysFont('Comic Sans MS', 30)              # Schriftart & Größe wählen
-MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)              # Schriftart & Größe wählen
+MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)          # Schriftart & Größe wählen
 
+def text_central(text, MYFONT):                                # Funktion Textzentralisierung
+    textsurface = MYFONT.render(text, True, WHITE)
+    return textsurface, textsurface.get_rect()
+
+
+# Funktion interaktive Klick-Buttons
+BUTTON_WIDTH = 200
+BUTTON_HEIGHT = 100
+BUTTON_SIZE = (BUTTON_WIDTH, BUTTON_HEIGHT)
+
+text_next = 'WEITER'
+
+
+def button_text(text_next):
+    textsurf_next, textrect = text_central(text_next, MYFONT)
+    textrect.center = ((SCREEN_WIDTH * (6 / 8) + (BUTTON_WIDTH / 2)), (SCREEN_HEIGHT * (7 / 9) + (BUTTON_HEIGHT / 2)))
+    screen.blit(textsurf_next, textrect)
+
+
+def button(action): # ABSTRAKTER GESTALTEN? zB (msg,x,y,w,h,ic,ac,action)
+    # Mausposition & click
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    # Interaktivität & Farbe des Buttons in Abhängigkeit der Mausposition & Click
+    if SCREEN_HEIGHT * (7 / 9) + BUTTON_HEIGHT > mouse[1] > SCREEN_HEIGHT * (7 / 9) and SCREEN_WIDTH * (6 / 8) + BUTTON_WIDTH > mouse[0] > SCREEN_WIDTH * (6 / 8):
+        pygame.draw.rect(screen, HF_BLUE_LIGHT, ((SCREEN_WIDTH * (6 / 8)), (SCREEN_HEIGHT * (7 / 9)), BUTTON_WIDTH, BUTTON_HEIGHT))
+        if click[0] == 1 and action is not None:
+            action()
+    else:
+        pygame.draw.rect(screen, HF_BLUE, ((SCREEN_WIDTH * (6 / 8)), (SCREEN_HEIGHT * (7 / 9)), BUTTON_WIDTH, BUTTON_HEIGHT))
+
+    # Text des Buttons
+    button_text(text_next)
+
+
+# Logo
+hf_logo = pygame.image.load('happy(i) fountain.jpeg')
+hf_logo = pygame.transform.scale(hf_logo, (140, 100))
 
 # 1.) Willkommensfenster
-# # Text
-posX = SCREEN_HEIGHT*1/8
-posY = SCREEN_HEIGHT*1/8
-position = (posX, posY)
-
-text_1 = ["Herzlich willkommen!", "hapPy(i) fountain: Dein persönlicher Home-Entertainment Assistent", "der über deine Augenbewegungen gesteuert wird.", "Bitte schaue auf den Start-Button."]
-
-# label_1 =[]
-# for line in text_1:
-#      label.append(MYFONT.render(text_1, False, text_colour))
-# return label, position
-# for line in range(len(label)):
-#     screen.blit(label(line), (position[0], (position[1]+(line*fontsize)+(15*line)), (position[1]+(line*fontsize)+(15*line))))
-
-# Start-Button: Text, Textfarbe, Schriftgröße, Schriftart, Rechteck, Rechtecksfarbe, Verankerung
-startbutton_text = "START"
-
+text_welcome = "Herzlich willkommen! hapPy(i) fountain: Dein persönlicher Home-Entertainment Assistent, der über \n" \
+               "deine Augenbewegungen gesteuert wird."
 
 # 2.) Erklärung Stimmungsfenster
-# # Text
-text_mood = "Bitte wähle im nächsten Schritt deine momentane Stimmung aus, indem du auf die passende Stimmung schaust. Das rechteck wird sich auf dem Bildschirm bewegen. Bitte verfolge es mit deinem Blick und schaue es die ganze Zeit an."
+text_mood = "Bitte wähle im nächsten Schritt deine momentane Stimmung aus, indem du auf die passende Stimmung \n" \
+            "schaust. Das rechteck wird sich auf dem Bildschirm bewegen. Bitte verfolge es mit deinem Blick und \n" \
+            "schaue es die ganze Zeit an."
 
-#
-#
-# # 3.) Fenster: Auswahl Stimmung
+# 3.) Fenster: Auswahl Stimmung
 # # Graphiken laden & verkleinern
 width_moodimage_x = 150
 height_moodimage_y = 150
@@ -63,18 +87,6 @@ party = pygame.image.load('party.png')
 party = pygame.transform.scale(party, size_moodimage)
 chillen = pygame.image.load('chillen.png')
 chillen = pygame.transform.scale(chillen, size_moodimage)
-
-x_happy = 0.5*SCREEN_WIDTH - width_moodimage_x                    # Startpositionen (berechnet aus Screensize & Zentrierung)
-y_happy = 0.5*SCREEN_HEIGHT - height_moodimage_y
-x_sad = 0.5*SCREEN_WIDTH
-y_sad = 0.5*SCREEN_HEIGHT - height_moodimage_y
-x_party = 0.5*SCREEN_WIDTH - width_moodimage_x
-y_party = 0.5*SCREEN_HEIGHT
-x_chillen = 0.5*SCREEN_WIDTH
-y_chillen = 0.5*SCREEN_HEIGHT
-
-x = 20                                                           # für die Bewegung der Images
-y = 10
 
 # 4.) Endfenster & kontinuierliches Hintergrundbild, abhängig von Stimmung
 
@@ -90,108 +102,157 @@ chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
 text_hf = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, HF_BLUE)
 
 
-# 5.) Weiter-Button
-#def next_button():
- #   = "WEITER"
-
-# 6) Logo
-hf_logo = pygame.image.load('happy(i) fountain.jpeg')
-hf_logo = pygame.transform.scale(hf_logo, (140, 100))
-
-
-
 # GUI anzeigen
 clock = pygame.time.Clock()
 FPS = 360
 
-guiExit = False
-while not guiExit:
+# 1.) Willkommenstext
+def welcomeloop():
+    welcomeExit = False
+    while not welcomeExit:
 
-    # Einstellungen zum Beenden der GUI
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            guiExit = True
-        if event.type == pygame.KEYDOWN:
-            if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
-                pygame.quit()
-                raise SystemExit
+        # Einstellungen zum Beenden der GUI
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                welcomeExit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                    pygame.quit()
+                    raise SystemExit
 
-    # 1.) Willkommenstext
-    screen.fill(BLACK)
+        screen.fill(BLACK)
 
-    # #textsurface_1 = myfont.render(text_1, False, text_colour)
-    # #screen.blit(textsurface_1, (500, 500))
-    # for line in text_1:
-    #     label_1.append(myfont.render(text_1, False, text_colour))
-    # # return label, position
-    # for line in range(len(label_1)):
-    #     screen.blit(label_1(line), (
-    #     position[0], (position[1] + (line * fontsize) + (15 * line)), (position[1] + (line * fontsize) + (15 * line))))
-    #
-    pygame.draw.rect(screen, WHITE, ((SCREEN_WIDTH*(6/8)), (SCREEN_HEIGHT*(7/9)), 200, 100))
+        textsurf_welcome, textrect = text_central(text_welcome, MYFONT)
+        textrect.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 
-    screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
-    pygame.display.update()
+        button(explanationloop)
 
-    # 2.) Erklärung Stimmungsfenster
-    screen.fill(BLACK)
-
-    screen.blit(hf_logo, (SCREEN_WIDTH * (7 / 8), 100))
-    pygame.display.update()
-
-    # 3.) Stimmungfenster
-    ## Stimmungen anzeigen
+        screen.blit(textsurf_welcome, textrect)
+        screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
+        pygame.display.update()
+        clock.tick(FPS)                                          # frames pro Sekunde
 
 
-    screen.blit(happy, (x_happy, y_happy))
-    screen.blit(sad, (x_sad, y_sad))
-    screen.blit(party, (x_party, y_party))
-    screen.blit(chillen, (x_chillen, y_chillen))
+# 2.) Erklärung Stimmungsfenster
+def explanationloop():
+    explanationExit = False
+    while not explanationExit:
 
-    pygame.display.update()
+        # Einstellungen zum Beenden der GUI
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                explanationExit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                    pygame.quit()
+                    raise SystemExit
 
-    ## Stimmungen bewegen
+        screen.fill(BLACK)
 
-    x_happy = x_happy - x
-    y_happy = y_happy - y
-    x_sad = x_sad + x
-    y_sad = y_sad - y
-    x_party = x_party - x
-    y_party = y_party + y
-    x_chillen = x_chillen + x
-    y_chillen = y_chillen + y
+        textsurf_mood, textrect = text_central(text_mood, MYFONT)
+        textrect.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 
-    screen.blit(happy, (x_happy, y_happy))
-    screen.blit(sad, (x_sad, y_sad))
-    screen.blit(party, (x_party, y_party))
-    screen.blit(chillen, (x_chillen, y_chillen))
+        button(moodloop)
 
-    pygame.display.update()
+        screen.blit(textsurf_mood, textrect)
+        screen.blit(hf_logo, (SCREEN_WIDTH * (7 / 8), 100))
+        pygame.display.update()
+        clock.tick(FPS)                                          # frames pro Sekunde
 
-    if y_party > (SCREEN_HEIGHT-200):                            # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
-        # guiExit = True                                         # TUN SIE ABER NICHT?!?!?!
+
+# 3.) Stimmungfenster
+def moodloop():
+    moodExit = False
+    while not moodExit:
+
+        # Einstellungen zum Beenden der GUI
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                moodExit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                    pygame.quit()
+                    raise SystemExit
+
+        screen.fill(BLACK)
+
+        ## Stimmungen anzeigen
+        # # Startpositionen (berechnet aus Screensize & Zentrierung)
+        x_happy = 0.5 * SCREEN_WIDTH - width_moodimage_x
+        y_happy = 0.5 * SCREEN_HEIGHT - height_moodimage_y
+        x_sad = 0.5 * SCREEN_WIDTH
+        y_sad = 0.5 * SCREEN_HEIGHT - height_moodimage_y
+        x_party = 0.5 * SCREEN_WIDTH - width_moodimage_x
+        y_party = 0.5 * SCREEN_HEIGHT
+        x_chillen = 0.5 * SCREEN_WIDTH
+        y_chillen = 0.5 * SCREEN_HEIGHT
+
         screen.blit(happy, (x_happy, y_happy))
         screen.blit(sad, (x_sad, y_sad))
         screen.blit(party, (x_party, y_party))
         screen.blit(chillen, (x_chillen, y_chillen))
 
-    pygame.display.update()
+        pygame.display.update()
 
-    # 4.) Endfenster
-    screen.fill(BLACK)
-    pygame.display.update()
 
-    if eye_input == 'happy':
-        screen.blit(happy_background, (0, 0))
-    elif eye_input == 'sad':
-        screen.blit(sad_background, (0, 0))
-    elif eye_input == 'party':
-        screen.blit(party_background, (0, 0))
-    elif eye_input == 'chillen':
-        screen.blit(chillen_background, (0, 0))
+# time.sleep einbauen, damit die Menschen genug Zeit haben, die Stimmungen zu lesen? 10 Sekunden?
 
-    screen.blit(text_hf, (100, 100))
-    screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
-    pygame.display.update()
-    clock.tick(FPS)                                          # frames pro Sekunde
+
+        ## Stimmungen bewegen (innerhalb Screens) ALS SIE NOCH OHNE FUNCTION WAREN HAT ES FUNLKTIONIERT!!!
+        x = 20
+        y = 10
+
+        if y_party < (SCREEN_HEIGHT - 200):  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+            x_happy = x_happy - x
+            y_happy = y_happy - y
+            x_sad = x_sad + x
+            y_sad = y_sad - y
+            x_party = x_party - x
+            y_party = y_party + y
+            x_chillen = x_chillen + x
+            y_chillen = y_chillen + y
+
+        screen.blit(happy, (x_happy, y_happy))
+        screen.blit(sad, (x_sad, y_sad))
+        screen.blit(party, (x_party, y_party))
+        screen.blit(chillen, (x_chillen, y_chillen))
+
+        pygame.display.update()
+        clock.tick(FPS)                                          # frames pro Sekunde
+
+
+# 4.) Endfenster
+def endloop():
+    endExit = False
+    while not endExit:
+
+        # Einstellungen zum Beenden der GUI
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                endExit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                    pygame.quit()
+                    raise SystemExit
+
+        screen.fill(BLACK)
+        pygame.display.update()
+
+        if eye_input == 'happy':
+            screen.blit(happy_background, (0, 0))
+        elif eye_input == 'sad':
+            screen.blit(sad_background, (0, 0))
+        elif eye_input == 'party':
+            screen.blit(party_background, (0, 0))
+        elif eye_input == 'chillen':
+            screen.blit(chillen_background, (0, 0))
+
+        screen.blit(text_hf, (100, 100))
+        screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
+        pygame.display.update()
+        clock.tick(FPS)                                          # frames pro Sekunde
+
+
+welcomeloop()
+explanationloop()
 
