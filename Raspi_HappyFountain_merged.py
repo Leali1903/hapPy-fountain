@@ -4,7 +4,6 @@ import board
 import neopixel
 import random
 import pygame
-from threading import Thread
 
 eye_input = 'party'
 
