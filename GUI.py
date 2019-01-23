@@ -134,6 +134,11 @@ def welcomeloop():
 
 
 # 2.) Erklärung Stimmungsfenster
+INTRO_DURATION = 4 # how long to play intro in seconds
+TICK = USEREVENT + 1 # event type
+pygame.time.set_timer(TICK, 1000) # fire the event (tick) every second
+time_in_seconds = 0
+
 def explanationloop():
     explanationExit = False
     while not explanationExit:
@@ -146,6 +151,7 @@ def explanationloop():
                 if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
                     pygame.quit()
                     raise SystemExit
+
 
         screen.fill(BLACK)
 
@@ -173,6 +179,9 @@ def moodloop():
                 if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
                     pygame.quit()
                     raise SystemExit
+            if event.type == pygame.MOUSEBUTTONDOWN:            # Klicken = nächste Loop (oder lieber nach Zeit, zB 5 Sekunden?)
+                moodExit = True
+                moodloopmove()
 
         screen.fill(BLACK)
 
@@ -193,24 +202,63 @@ def moodloop():
         screen.blit(chillen, (x_chillen, y_chillen))
 
         pygame.display.update()
+        clock.tick(FPS)                                          # frames pro Sekunde
 
 
-# time.sleep einbauen, damit die Menschen genug Zeit haben, die Stimmungen zu lesen? 10 Sekunden?
 
 
-        ## Stimmungen bewegen (innerhalb Screens) ALS SIE NOCH OHNE FUNCTION WAREN HAT ES FUNLKTIONIERT!!!
+## Stimmungen bewegen (innerhalb Screens) ALS SIE NOCH OHNE FUNCTION WAREN HAT ES FUNLKTIONIERT!!!
+def moodloopmove():
+    moodmoveExit = False
+    while not moodmoveExit:
+
+    # Einstellungen zum Beenden der GUI
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                moodmoveExit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                    pygame.quit()
+                    raise SystemExit
+
+        x_happy = 0.5 * SCREEN_WIDTH - width_moodimage_x
+        y_happy = 0.5 * SCREEN_HEIGHT - height_moodimage_y
+        x_sad = 0.5 * SCREEN_WIDTH
+        y_sad = 0.5 * SCREEN_HEIGHT - height_moodimage_y
+        x_party = 0.5 * SCREEN_WIDTH - width_moodimage_x
+        y_party = 0.5 * SCREEN_HEIGHT
+        x_chillen = 0.5 * SCREEN_WIDTH
+        y_chillen = 0.5 * SCREEN_HEIGHT
+
         x = 20
         y = 10
 
-        if y_party < (SCREEN_HEIGHT - 200):  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
-            x_happy = x_happy - x
-            y_happy = y_happy - y
-            x_sad = x_sad + x
-            y_sad = y_sad - y
-            x_party = x_party - x
-            y_party = y_party + y
-            x_chillen = x_chillen + x
-            y_chillen = y_chillen + y
+        if y_party < SCREEN_HEIGHT:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+            x_happy -= x
+            y_happy -= y
+
+            x_sad += x
+            y_sad -= y
+
+            x_party -= x
+            y_party += y
+
+            x_chillen += x
+            y_chillen += y
+
+
+        else:
+            x_happy = x_happy
+            y_happy = y_happy
+
+            x_sad = x_sad
+            y_sad = y_sad
+
+            x_party = x_party
+            y_party = y_party
+
+            x_chillen = x_chillen
+            y_chillen = y_chillen
 
         screen.blit(happy, (x_happy, y_happy))
         screen.blit(sad, (x_sad, y_sad))
@@ -254,5 +302,4 @@ def endloop():
 
 
 welcomeloop()
-explanationloop()
 
