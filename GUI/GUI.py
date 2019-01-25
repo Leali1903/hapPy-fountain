@@ -26,6 +26,8 @@ HF_BLUE_LIGHT = (120, 200, 200)
 MYFONT = pygame.font.SysFont('Comic Sans MS', 30)              # Schriftart & Größe wählen
 MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)          # Schriftart & Größe wählen
 
+z = MYFONT.get_height()                                        # MYFONT-Höhe = 43
+print(z)
 
 def text_central(text, MYFONT):                                # Funktion Textzentralisierung
     textsurface = MYFONT.render(text, True, WHITE)
@@ -36,14 +38,6 @@ def text_central(text, MYFONT):                                # Funktion Textze
 BUTTON_WIDTH = 200
 BUTTON_HEIGHT = 100
 BUTTON_SIZE = (BUTTON_WIDTH, BUTTON_HEIGHT)
-
-text_next = 'WEITER'
-
-
-def button_text(text_next):
-    textsurf_next, textrect = text_central(text_next, MYFONT)
-    textrect.center = ((SCREEN_WIDTH * (6 / 8) + (BUTTON_WIDTH / 2)), (SCREEN_HEIGHT * (7 / 9) + (BUTTON_HEIGHT / 2)))
-    screen.blit(textsurf_next, textrect)
 
 
 def button(action):                                     # ABSTRAKTER GESTALTEN? zB (msg,x,y,w,h,ic,ac,action)
@@ -59,13 +53,16 @@ def button(action):                                     # ABSTRAKTER GESTALTEN? 
     else:
         pygame.draw.rect(screen, HF_BLUE, ((SCREEN_WIDTH * (6 / 8)), (SCREEN_HEIGHT * (7 / 9)), BUTTON_WIDTH, BUTTON_HEIGHT))
 
-    # Text des Buttons
-    button_text(text_next)
+    # Text Button
+    textsurf_next, textrect = text_central('WEITER', MYFONT)
+    textrect.center = ((SCREEN_WIDTH * (6 / 8) + (BUTTON_WIDTH / 2)), (SCREEN_HEIGHT * (7 / 9) + (BUTTON_HEIGHT / 2)))
+    screen.blit(textsurf_next, textrect)
 
 
 def mousecursor():
-    cursor = pygame.image.load('mouse.png').convert_alpha()     # mousecursor raindrop
-    cursor = pygame.transform.scale(cursor, (50,70))
+    #cursor = pygame.image.load('mouse.png').convert_alpha()     # mousecursor raindrop
+    cursor = pygame.image.load('mouse.jpg')
+    cursor = pygame.transform.scale(cursor, (40,60))
     pygame.mouse.set_cursor((8, 8), (0, 0), (0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0))  # transparenter Originalcursor
     screen.blit(cursor, pygame.mouse.get_pos())
 
@@ -74,11 +71,16 @@ def mousecursor():
 hf_logo = pygame.image.load('happy(i) fountain.jpeg')
 hf_logo = pygame.transform.scale(hf_logo, (140, 100))
 
+
 # 1.) Willkommensfenster
-text_welcome = "Herzlich willkommen! hapPy(i) fountain: Dein persönlicher Home-Entertainment Assistent, der über deine Augenbewegungen gesteuert wird."
+text_welcome1 = "Herzlich willkommen!"
+text_welcome2 = "hapPy(i) fountain:"
+text_welcome3 = "Dein persönlicher Home-Entertainment Assistent, der über deine Augen gesteuert wird."
 
 # 2.) Erklärung Stimmungsfenster
-text_mood = "Bitte wähle im nächsten Schritt deine Stimmung aus, indem du auf die passende Stimmung schaust. Das Symbol wird sich auf dem Bildschirm bewegen. Bitte verfolge es mit deinem Blick und schaue es die ganze Zeit an."
+text_mood1 = "Bitte wähle im nächsten Schritt deine Stimmung aus, indem du auf die passende Stimmung schaust."
+text_mood2 = "Das Symbol wird sich auf dem Bildschirm bewegen."
+text_mood3 = "Bitte verfolge es mit deinem Blick und schaue es die ganze Zeit an."
 
 # 3.) Fenster: Auswahl Stimmung
 # Graphiken laden & verkleinern
@@ -130,12 +132,20 @@ def welcomeloop():
 
         screen.fill(BLACK)
 
-        textsurf_welcome, textrect = text_central(text_welcome, MYFONT)
-        textrect.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+        textsurf_welcome1, textrect1 = text_central(text_welcome1, MYFONT)
+        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (2*43))) # 43 = Font-Size von MYFONT
+
+        textsurf_welcome2, textrect2 = text_central(text_welcome2, MYFONT_BIG)
+        textrect2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+
+        textsurf_welcome3, textrect3 = text_central(text_welcome3, MYFONT)
+        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (2*43)))
 
         button(explanationloop)
 
-        screen.blit(textsurf_welcome, textrect)
+        screen.blit(textsurf_welcome1, textrect1)
+        screen.blit(textsurf_welcome2, textrect2)
+        screen.blit(textsurf_welcome3, textrect3)
         screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
         mousecursor()
         pygame.display.update()
@@ -158,12 +168,22 @@ def explanationloop():
 
         screen.fill(BLACK)
 
-        textsurf_mood, textrect = text_central(text_mood, MYFONT)
-        textrect.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+        textsurf_mood1, textrect1 = text_central(text_mood1, MYFONT)
+        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (2*43)))
 
-        button(moodloop)
+        textsurf_mood2, textrect2 = text_central(text_mood2, MYFONT)
+        textrect2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 
-        screen.blit(textsurf_mood, textrect)
+        textsurf_mood3, textrect3 = text_central(text_mood3, MYFONT)
+        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (2*43)))
+
+
+        #button(moodloop)
+
+        screen.blit(textsurf_mood1, textrect1)
+        screen.blit(textsurf_mood2, textrect2)
+        screen.blit(textsurf_mood3, textrect3)
+
         screen.blit(hf_logo, (SCREEN_WIDTH * (7 / 8), 100))
         pygame.display.update()
         clock.tick(FPS)                                          # frames pro Sekunde
