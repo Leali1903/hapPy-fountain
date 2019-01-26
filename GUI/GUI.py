@@ -137,6 +137,7 @@ def moodloop():
 
 # Stimmungen bewegen (innerhalb Screens) ALS SIE NOCH OHNE FUNCTION WAREN HAT ES FUNLKTIONIERT!!!
 def moodloopmove():
+    fps = 13
     moodmoveexit = False
     while not moodmoveexit:
 
@@ -160,42 +161,53 @@ def moodloopmove():
         x_chillen = 0.5 * SCREEN_WIDTH
         y_chillen = 0.5 * SCREEN_HEIGHT
 
-        x = 20
-        y = 10
-
-        if y_party < SCREEN_HEIGHT:             # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
-            x_happy -= x
-            y_happy -= y
-
-            x_sad += x
-            y_sad -= y
-
-            x_party -= x
-            y_party += y
-
-            x_chillen += x
-            y_chillen += y
-
-        else:
-            x_happy = x_happy
-            y_happy = y_happy
-
-            x_sad = x_sad
-            y_sad = y_sad
-
-            x_party = x_party
-            y_party = y_party
-
-            x_chillen = x_chillen
-            y_chillen = y_chillen
-
         screen.blit(happy, (x_happy, y_happy))
         screen.blit(sad, (x_sad, y_sad))
         screen.blit(party, (x_party, y_party))
         screen.blit(chillen, (x_chillen, y_chillen))
 
-        pygame.display.update()
-        clock.tick(FPS)                                          # frames pro Sekunde
+        x = 20
+        y = 10
+        movingexit = False
+        while not movingexit:
+            screen.fill(BLACK)
+
+            if y_party < SCREEN_HEIGHT - 200:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+                x_happy -= x
+                y_happy -= y
+
+                x_sad += x
+                y_sad -= y
+
+                x_party -= x
+                y_party += y
+
+                x_chillen += x
+                y_chillen += y
+
+            else:
+                x_happy = x_happy
+                y_happy = y_happy
+
+                x_sad = x_sad
+                y_sad = y_sad
+
+                x_party = x_party
+                y_party = y_party
+
+                x_chillen = x_chillen
+                y_chillen = y_chillen
+
+                movingexit = True
+                moodmoveexit = True
+
+            screen.blit(happy, (x_happy, y_happy))
+            screen.blit(sad, (x_sad, y_sad))
+            screen.blit(party, (x_party, y_party))
+            screen.blit(chillen, (x_chillen, y_chillen))
+
+            pygame.display.update()
+            clock.tick(fps)  # frames pro Sekunde
 
 
 # 4.) Endfenster
