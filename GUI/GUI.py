@@ -56,18 +56,18 @@ def welcomeloop():
         screen.fill(BLACK)
 
         # Rechteck um Willkommenstext
-        pygame.draw.rect(screen, HF_BLUE,(250, 200, 1400, 350))
-        pygame.draw.rect(screen, BLACK,(275, 225, 1350, 300))
+        pygame.draw.rect(screen, HF_BLUE, (250, 200, 1400, 350))
+        pygame.draw.rect(screen, BLACK, (275, 225, 1350, 300))
 
         # Willkommenstext
         textsurf_welcome1, textrect1 = text_central(text_welcome1, MYFONT)
-        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (6*43)))             # 43 = Font-Size von MYFONT
+        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (6 * MYFONT_HEIGHT)))
 
         # textsurf_welcome2, textrect2 = text_central(text_welcome2, MYFONT_BIG)            # Option: happy(i) fountain Schrift statt Logo
-        # textrect2.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (4*43)))
+        # textrect2.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (4*MYFONT_HEIGHT)))
 
         textsurf_welcome3, textrect3 = text_central(text_welcome3, MYFONT)
-        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (2*43)))
+        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (2 * MYFONT_HEIGHT)))
 
         screen.blit(textsurf_welcome1, textrect1)
         # screen.blit(textsurf_welcome2, textrect2)                                         # Option: happy(i) fountain Schrift statt Logo
@@ -76,13 +76,13 @@ def welcomeloop():
         # Erklärung Stimmungsfenster
 
         textsurf_mood1, textrect1 = text_central(text_mood1, MYFONT)
-        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (2 * 43)))
+        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (2 * MYFONT_HEIGHT)))
 
         textsurf_mood2, textrect2 = text_central(text_mood2, MYFONT)
-        textrect2.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (4 * 43)))
+        textrect2.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (4 * MYFONT_HEIGHT)))
 
         textsurf_mood3, textrect3 = text_central(text_mood3, MYFONT)
-        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (6 * 43)))
+        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (6 * MYFONT_HEIGHT)))
 
         screen.blit(textsurf_mood1, textrect1)
         screen.blit(textsurf_mood2, textrect2)
@@ -251,8 +251,7 @@ HF_BLUE_LIGHT = (120, 200, 200)
 MYFONT = pygame.font.SysFont('Comic Sans MS', 30)              # Schriftart & Größe wählen
 MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)          # Schriftart & Größe wählen
 
-z = MYFONT.get_height()                                        # MYFONT-Höhe = 43
-print(z)
+MYFONT_HEIGHT = MYFONT.get_height()                            # Höhe Schriftart
 
 # Button
 BUTTON_WIDTH = 200
@@ -309,7 +308,6 @@ clock = pygame.time.Clock()
 FPS = 360
 
 # Start
-
 welcomeloop()
 
 
