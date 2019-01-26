@@ -29,6 +29,7 @@ MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)          # Schriftart & Gr
 z = MYFONT.get_height()                                        # MYFONT-Höhe = 43
 print(z)
 
+
 def text_central(text, MYFONT):                                # Funktion Textzentralisierung
     textsurface = MYFONT.render(text, True, WHITE)
     return textsurface, textsurface.get_rect()
@@ -60,8 +61,8 @@ def button(action):                                     # ABSTRAKTER GESTALTEN? 
 
 
 def mousecursor():
-    #cursor = pygame.image.load('mouse.png').convert_alpha()     # mousecursor raindrop
-    cursor = pygame.image.load('mouse.jpg')
+    cursor = pygame.image.load('mouse.png').convert_alpha()                                      # mousecursor raindrop
+    # cursor = pygame.image.load('mouse.jpg')                                                    # mousecursor happy fountain
     cursor = pygame.transform.scale(cursor, (40,60))
     pygame.mouse.set_cursor((8, 8), (0, 0), (0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0))  # transparenter Originalcursor
     screen.blit(cursor, pygame.mouse.get_pos())
@@ -69,20 +70,21 @@ def mousecursor():
 
 # Logo
 hf_logo = pygame.image.load('happy(i) fountain.jpeg')
-hf_logo = pygame.transform.scale(hf_logo, (140, 100))
+hf_logo = pygame.transform.scale(hf_logo, (180, 110))
 
 
 # 1.) Willkommensfenster
+# Willkommenstext
 text_welcome1 = "Herzlich willkommen!"
 text_welcome2 = "hapPy(i) fountain:"
 text_welcome3 = "Dein persönlicher Home-Entertainment Assistent, der über deine Augen gesteuert wird."
 
-# 2.) Erklärung Stimmungsfenster
+# Erklärung Stimmungsfenster
 text_mood1 = "Bitte wähle im nächsten Schritt deine Stimmung aus, indem du auf die passende Stimmung schaust."
 text_mood2 = "Das Symbol wird sich auf dem Bildschirm bewegen."
 text_mood3 = "Bitte verfolge es mit deinem Blick und schaue es die ganze Zeit an."
 
-# 3.) Fenster: Auswahl Stimmung
+# 2.) Fenster: Auswahl Stimmung
 # Graphiken laden & verkleinern
 width_moodimage_x = 150
 height_moodimage_y = 150
@@ -97,7 +99,7 @@ party = pygame.transform.scale(party, size_moodimage)
 chillen = pygame.image.load('chillen.png')
 chillen = pygame.transform.scale(chillen, size_moodimage)
 
-# 4.) Endfenster & kontinuierliches Hintergrundbild, abhängig von Stimmung
+# 3.) Endfenster & kontinuierliches Hintergrundbild, abhängig von Stimmung
 # Graphiken laden & verkleinern
 happy_background = pygame.image.load('freude.jpg')
 happy_background = pygame.transform.scale(happy_background, SCREEN_SIZE)
@@ -116,7 +118,7 @@ clock = pygame.time.Clock()
 FPS = 360
 
 
-# 1.) Willkommenstext
+# 1.) Willkommensfenster
 def welcomeloop():
     welcomeexit = False
     while not welcomeexit:
@@ -126,70 +128,55 @@ def welcomeloop():
             if event.type == pygame.QUIT:
                 welcomeexit = True
             if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):                              # nach Klick auf Escape oder q
                     pygame.quit()
                     raise SystemExit
 
         screen.fill(BLACK)
 
-        textsurf_welcome1, textrect1 = text_central(text_welcome1, MYFONT)
-        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (2*43))) # 43 = Font-Size von MYFONT
+        # Rechteck um Willkommenstext
+        pygame.draw.rect(screen, HF_BLUE,(250, 200, 1400, 350))
+        pygame.draw.rect(screen, BLACK,(275, 225, 1350, 300))
 
-        textsurf_welcome2, textrect2 = text_central(text_welcome2, MYFONT_BIG)
-        textrect2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+        # Willkommenstext
+        textsurf_welcome1, textrect1 = text_central(text_welcome1, MYFONT)
+        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (6*43)))             # 43 = Font-Size von MYFONT
+
+        # textsurf_welcome2, textrect2 = text_central(text_welcome2, MYFONT_BIG)            # Option: happy(i) fountain Schrift statt Logo
+        # textrect2.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (4*43)))
 
         textsurf_welcome3, textrect3 = text_central(text_welcome3, MYFONT)
-        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (2*43)))
-
-        button(explanationloop)
+        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (2*43)))
 
         screen.blit(textsurf_welcome1, textrect1)
-        screen.blit(textsurf_welcome2, textrect2)
+        # screen.blit(textsurf_welcome2, textrect2)                                         # Option: happy(i) fountain Schrift statt Logo
         screen.blit(textsurf_welcome3, textrect3)
-        screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
-        mousecursor()
-        pygame.display.update()
-        clock.tick(FPS)                                          # frames pro Sekunde
 
-
-# 2.) Erklärung Stimmungsfenster
-def explanationloop():
-    explanationexit = False
-    while not explanationexit:
-
-        # Einstellungen zum Beenden der GUI
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                explanationexit = True
-            if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
-                    pygame.quit()
-                    raise SystemExit
-
-        screen.fill(BLACK)
+        # Erklärung Stimmungsfenster
 
         textsurf_mood1, textrect1 = text_central(text_mood1, MYFONT)
-        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) - (2*43)))
+        textrect1.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (2 * 43)))
 
         textsurf_mood2, textrect2 = text_central(text_mood2, MYFONT)
-        textrect2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+        textrect2.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (4 * 43)))
 
         textsurf_mood3, textrect3 = text_central(text_mood3, MYFONT)
-        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (2*43)))
-
-
-        #button(moodloop)
+        textrect3.center = ((SCREEN_WIDTH / 2), ((SCREEN_HEIGHT / 2) + (6 * 43)))
 
         screen.blit(textsurf_mood1, textrect1)
         screen.blit(textsurf_mood2, textrect2)
         screen.blit(textsurf_mood3, textrect3)
 
-        screen.blit(hf_logo, (SCREEN_WIDTH * (7 / 8), 100))
+        button(moodloop)
+
+        # screen.blit(hf_logo, (SCREEN_WIDTH*(1/15), SCREEN_HEIGHT - 250))                  # Option: Logo oben rechts
+        screen.blit(hf_logo, ((SCREEN_WIDTH / 2 - 100), ((SCREEN_HEIGHT / 2) - 220)))       # Option: Logo statt Text
+        mousecursor()
         pygame.display.update()
-        clock.tick(FPS)                                          # frames pro Sekunde
+        clock.tick(FPS)                                                                     # frames pro Sekunde
 
 
-# 3.) Stimmungfenster
+# 2.) Stimmungfenster
 def moodloop():
     moodexit = False
     while not moodexit:
