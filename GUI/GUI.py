@@ -3,45 +3,16 @@ from pygame.locals import *
 
 eye_input = 'happy'
 
-
 ###################### EINGABE-GUI ######################
 
-# Pygame initialisieren
-pygame.init()
-pygame.font.init()                                             # Textmodul initialisieren -> braucht man das?
 
-# Bildschirmeinstellungen
-SCREEN_HEIGHT = 1080
-SCREEN_WIDTH = 1920
-CENTER = ((SCREEN_WIDTH % 2), (SCREEN_HEIGHT % 2))
-SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
+def text_central(text, MYFONT):                             # Funktion Textzentralisierung
 
-# Farb- & Texteinstellungen
-BLACK = (0, 0, 0)                                              # schwarz für Boxen & Texte
-WHITE = (255, 255, 255)                                        # weiß für Boxen & Texte
-HF_BLUE = (79, 154, 196)
-HF_BLUE_LIGHT = (120, 200, 200)
-
-MYFONT = pygame.font.SysFont('Comic Sans MS', 30)              # Schriftart & Größe wählen
-MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)          # Schriftart & Größe wählen
-
-z = MYFONT.get_height()                                        # MYFONT-Höhe = 43
-print(z)
-
-
-def text_central(text, MYFONT):                                # Funktion Textzentralisierung
     textsurface = MYFONT.render(text, True, WHITE)
     return textsurface, textsurface.get_rect()
 
 
-# Funktion interaktive Klick-Buttons
-BUTTON_WIDTH = 200
-BUTTON_HEIGHT = 100
-BUTTON_SIZE = (BUTTON_WIDTH, BUTTON_HEIGHT)
-
-
-def button(action):                                     # ABSTRAKTER GESTALTEN? zB (msg,x,y,w,h,ic,ac,action)
+def button(action):                                         # Funktion interaktiver Klick-Button
     # Mausposition & click
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -60,62 +31,12 @@ def button(action):                                     # ABSTRAKTER GESTALTEN? 
     screen.blit(textsurf_next, textrect)
 
 
-def mousecursor():
+def mousecursor():                                          # Funktion Mousecursor
     cursor = pygame.image.load('mouse.png').convert_alpha()                                      # mousecursor raindrop
     # cursor = pygame.image.load('mouse.jpg')                                                    # mousecursor happy fountain
     cursor = pygame.transform.scale(cursor, (40,60))
     pygame.mouse.set_cursor((8, 8), (0, 0), (0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0))  # transparenter Originalcursor
     screen.blit(cursor, pygame.mouse.get_pos())
-
-
-# Logo
-hf_logo = pygame.image.load('happy(i) fountain.jpeg')
-hf_logo = pygame.transform.scale(hf_logo, (180, 110))
-
-
-# 1.) Willkommensfenster
-# Willkommenstext
-text_welcome1 = "Herzlich willkommen!"
-text_welcome2 = "hapPy(i) fountain:"
-text_welcome3 = "Dein persönlicher Home-Entertainment Assistent, der über deine Augen gesteuert wird."
-
-# Erklärung Stimmungsfenster
-text_mood1 = "Bitte wähle im nächsten Schritt deine Stimmung aus, indem du auf die passende Stimmung schaust."
-text_mood2 = "Das Symbol wird sich auf dem Bildschirm bewegen."
-text_mood3 = "Bitte verfolge es mit deinem Blick und schaue es die ganze Zeit an."
-
-# 2.) Fenster: Auswahl Stimmung
-# Graphiken laden & verkleinern
-width_moodimage_x = 150
-height_moodimage_y = 150
-size_moodimage = (width_moodimage_x, height_moodimage_y)
-
-happy = pygame.image.load('happy.png')
-happy = pygame.transform.scale(happy, size_moodimage)
-sad = pygame.image.load('sad.png')
-sad = pygame.transform.scale(sad, size_moodimage)
-party = pygame.image.load('party.png')
-party = pygame.transform.scale(party, size_moodimage)
-chillen = pygame.image.load('chillen.png')
-chillen = pygame.transform.scale(chillen, size_moodimage)
-
-# 3.) Endfenster & kontinuierliches Hintergrundbild, abhängig von Stimmung
-# Graphiken laden & verkleinern
-happy_background = pygame.image.load('freude.jpg')
-happy_background = pygame.transform.scale(happy_background, SCREEN_SIZE)
-sad_background = pygame.image.load('trauer.jpg')
-sad_background = pygame.transform.scale(sad_background, SCREEN_SIZE)
-party_background = pygame.image.load('party.jpg')
-party_background = pygame.transform.scale(party_background, SCREEN_SIZE)
-chillen_background = pygame.image.load('chillen.jpg')
-chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
-
-text_hf = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, HF_BLUE)
-
-
-# GUI anzeigen
-clock = pygame.time.Clock()
-FPS = 360
 
 
 # 1.) Willkommensfenster
@@ -308,6 +229,86 @@ def endloop():
         pygame.display.update()
         clock.tick(FPS)                                          # frames pro Sekunde
 
+
+# Pygame initialisieren
+pygame.init()
+pygame.font.init()                                             # Textmodul initialisieren -> braucht man das?
+
+
+# Bildschirmeinstellungen
+SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1920
+CENTER = ((SCREEN_WIDTH % 2), (SCREEN_HEIGHT % 2))
+SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
+
+# Farb- & Texteinstellungen
+BLACK = (0, 0, 0)                                              # schwarz für Boxen & Texte
+WHITE = (255, 255, 255)                                        # weiß für Boxen & Texte
+HF_BLUE = (79, 154, 196)
+HF_BLUE_LIGHT = (120, 200, 200)
+
+MYFONT = pygame.font.SysFont('Comic Sans MS', 30)              # Schriftart & Größe wählen
+MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)          # Schriftart & Größe wählen
+
+z = MYFONT.get_height()                                        # MYFONT-Höhe = 43
+print(z)
+
+# Button
+BUTTON_WIDTH = 200
+BUTTON_HEIGHT = 100
+BUTTON_SIZE = (BUTTON_WIDTH, BUTTON_HEIGHT)
+
+# Logo
+hf_logo = pygame.image.load('happy(i) fountain.jpeg')
+hf_logo = pygame.transform.scale(hf_logo, (180, 110))
+
+
+# 1.) Willkommensfenster
+# Willkommenstext
+text_welcome1 = "Herzlich willkommen!"
+text_welcome2 = "hapPy(i) fountain:"
+text_welcome3 = "Dein persönlicher Home-Entertainment Assistent, der über deine Augen gesteuert wird."
+
+# Erklärung Stimmungsfenster
+text_mood1 = "Bitte wähle im nächsten Schritt deine Stimmung aus, indem du auf die passende Stimmung schaust."
+text_mood2 = "Das Symbol wird sich auf dem Bildschirm bewegen."
+text_mood3 = "Bitte verfolge es mit deinem Blick und schaue es die ganze Zeit an."
+
+# 2.) Fenster: Auswahl Stimmung
+# Graphiken laden & verkleinern
+width_moodimage_x = 150
+height_moodimage_y = 150
+size_moodimage = (width_moodimage_x, height_moodimage_y)
+
+happy = pygame.image.load('happy.png')
+happy = pygame.transform.scale(happy, size_moodimage)
+sad = pygame.image.load('sad.png')
+sad = pygame.transform.scale(sad, size_moodimage)
+party = pygame.image.load('party.png')
+party = pygame.transform.scale(party, size_moodimage)
+chillen = pygame.image.load('chillen.png')
+chillen = pygame.transform.scale(chillen, size_moodimage)
+
+# 3.) Endfenster & kontinuierliches Hintergrundbild, abhängig von Stimmung
+# Graphiken laden & verkleinern
+happy_background = pygame.image.load('freude.jpg')
+happy_background = pygame.transform.scale(happy_background, SCREEN_SIZE)
+sad_background = pygame.image.load('trauer.jpg')
+sad_background = pygame.transform.scale(sad_background, SCREEN_SIZE)
+party_background = pygame.image.load('party.jpg')
+party_background = pygame.transform.scale(party_background, SCREEN_SIZE)
+chillen_background = pygame.image.load('chillen.jpg')
+chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
+
+text_hf = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, HF_BLUE)
+
+
+# frames pro Sekunde
+clock = pygame.time.Clock()
+FPS = 360
+
+# Start
 
 welcomeloop()
 
