@@ -1,3 +1,8 @@
+import RPi.GPIO as GPIO
+
+# Import the WS2801 module.
+import Adafruit_WS2801
+import Adafruit_GPIO.SPI as SPI
 import os
 import time
 import board
@@ -27,9 +32,9 @@ num_pixels = 64
 ORDER = neopixel.GRB
 
 # Spezifikation des Typs der Lichterkettte und einstellen der Helligkeit
-pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.2, auto_write=False,
-                           pixel_order=ORDER)
-
+SPI_PORT   = 0
+SPI_DEVICE = 0
+pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
 
 ###################### FUNKTIONEN DEFINIEREN ######################
 
@@ -54,7 +59,7 @@ def wheel_color(pos):
         r = 0
         g = int(pos * 3)
         b = int(255 - pos * 3)
-    return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
+    return Adafruit_WS2801.RGB_to_color(r, g, b)
 
 
 # Funktion zur Bewegung der Farben im Sad & Happy-Modus
@@ -95,7 +100,7 @@ def wheel_blue(pos):
         b = random.randint(190, 255)
         g = 0
     # weitergeben der generierten RGB-Werte, je nach erforderlichem Format der Lichterkette
-    return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
+    return Adafruit_WS2801.RGB_to_color(r, g, b)
 
 
 # Funktion zur Verteilung der Farben im Party-Modus
@@ -117,7 +122,7 @@ def blink_color(pos):
         b = random.randint(0, 255)
         g = random.randint(85, 255)
     # weitergeben der generierten RGB-Werte, je nach erforderlichem Format der Lichterkette
-    return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
+    return Adafruit_WS2801.RGB_to_color(r, g, b)
 
 
 # Funktion zur Verteilung der Farben im Chill-Modus
@@ -138,7 +143,7 @@ def chill_color(pos):
         r = 0
         b = 69
         g = 139
-    return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
+    return Adafruit_WS2801.RGB_to_color(r, g, b)
 
 
 ### MUSIK FUNKTIONEN ###
