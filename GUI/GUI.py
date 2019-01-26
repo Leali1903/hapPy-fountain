@@ -39,6 +39,12 @@ def mousecursor():                                          # Funktion Mousecurs
     screen.blit(cursor, pygame.mouse.get_pos())
 
 
+#def find_loc(surface1, surface2, surface3, surface4):
+ #   loc_x = (surface1.get_rect().x, surface2.get_rect().x, surface3.get_rect().x, surface4.get_rect().x)
+  #  loc_y = (surface1.get_rect().y, surface2.get_rect().y, surface3.get_rect().y, surface4.get_rect().y)
+   # return loc_x, loc_y
+
+
 # 1.) Willkommensfenster
 def welcomeloop():
     welcomeexit = False
@@ -137,8 +143,10 @@ def moodloop():
 
 # Stimmungen bewegen (innerhalb Screens) ALS SIE NOCH OHNE FUNCTION WAREN HAT ES FUNLKTIONIERT!!!
 def moodloopmove():
+
     fps = 13
     moodmoveexit = False
+
     while not moodmoveexit:
 
         # Einstellungen zum Beenden der GUI
@@ -168,11 +176,12 @@ def moodloopmove():
 
         x = 20
         y = 10
+
         movingexit = False
         while not movingexit:
             screen.fill(BLACK)
 
-            if y_party < SCREEN_HEIGHT - 200:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+            if x_happy > 0 and y_happy > 0:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
                 x_happy -= x
                 y_happy -= y
 
@@ -198,16 +207,24 @@ def moodloopmove():
                 x_chillen = x_chillen
                 y_chillen = y_chillen
 
-                movingexit = True
-                moodmoveexit = True
+            #loc = find_loc(happy, sad, party, chillen)
+            #print(loc)
+
+                loc_x = [x_happy, x_sad, x_party, x_chillen]
+                loc_y = [y_happy, y_sad, y_party, y_chillen]
+                print(loc_x, loc_y)
+
+                raise SystemExit
 
             screen.blit(happy, (x_happy, y_happy))
             screen.blit(sad, (x_sad, y_sad))
             screen.blit(party, (x_party, y_party))
             screen.blit(chillen, (x_chillen, y_chillen))
 
+
             pygame.display.update()
             clock.tick(fps)  # frames pro Sekunde
+
 
 
 # 4.) Endfenster
@@ -252,7 +269,7 @@ SCREEN_HEIGHT = 1080
 SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
+screen = pygame.display.set_mode(SCREEN_SIZE)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
 
 # Farb- & Texteinstellungen
 BLACK = (0, 0, 0)                                              # schwarz für Boxen & Texte
@@ -314,6 +331,9 @@ chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
 
 text_hf = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, HF_BLUE)
 
+# Lokalisierung der Mood-Buttons für Eyetracking-Abgleich
+#loc_x = 'None'
+#loc_y = 'None'
 
 # frames pro Sekunde
 clock = pygame.time.Clock()
