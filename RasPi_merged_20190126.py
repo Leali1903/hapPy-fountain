@@ -199,10 +199,13 @@ elif eye_input == 'sad':
     folder = "/home/pi/Music/sad/"
     tracks = find_tracks(folder)
     play_tracks(tracks)
+    next_track_index = 0
     ### LED LICHTERKETTE ###
     while True:  # weil es sich immer weiter bewegen soll.
         cycle(0.001, wheel_blue)  # zum Verändern der Blautöne über die Zeit pro Pixel
         continue_playing(tracks)
+        if continue_playing(tracks, next_track_index) == False:
+            break
 elif eye_input == 'chillen':
     ### BRUNNEN ###
     os.system(ON)
@@ -212,12 +215,14 @@ elif eye_input == 'chillen':
     folder = "/home/pi/Music/chillen/"
     tracks = find_tracks(folder)
     play_tracks(tracks)
+    next_track_index = 0
     ### LED LICHTERKETTE ###
     while True:
         for num in range(PIXEL_COUNT):
-            chill_color(num)  # da hier keine Veränderung über die Zeit geschieht
-            # einmal je nach Postion des Pixels einfärben
-        continue_playing(tracks)
+            pixels.set_pixel(i, chill_color(num))
+            pixels.show() # einmal je nach Postion des Pixels einfärben
+        if continue_playing(tracks, next_track_index) == False:
+            break
 
 elif eye_input == 'party':
     ### BRUNNEN ###
@@ -226,6 +231,7 @@ elif eye_input == 'party':
     folder = "/home/pi/Music/party/"
     tracks = find_tracks(folder)
     play_tracks(tracks)
+    next_track_index = 0
     ### LED LICHTERKETTE ###
     while True:  # weil es sich immer weiter bewegen soll.
         for num in range(PIXEL_COUNT):
@@ -237,7 +243,8 @@ elif eye_input == 'party':
         print(pixels)  # weil sonst die Lichterkette crasht
         pixels.show()
         time.sleep(0.0001)
-        continue_playing(tracks)
+        if continue_playing(tracks, next_track_index) == False:
+            break
 
 else:
     ### BRUNNEN ###
