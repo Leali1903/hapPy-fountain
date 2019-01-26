@@ -1,12 +1,8 @@
 import RPi.GPIO as GPIO
-
-# Import the WS2801 module.
-import Adafruit_WS2801
+import Adafruit_WS2801  # Import the WS2801 module.
 import Adafruit_GPIO.SPI as SPI
 import os
 import time
-import board
-import neopixel
 import random
 import pygame
 
@@ -22,14 +18,8 @@ OFF = 'sudo /home/pi/wiringPi/433Utils/RPi_utils/codesend 5506388'  # Befehl zum
 
 ### LED LICHTERKETTE ###
 
-# Eingabe Data-Output-Pin (18 & 12 = mit PWM, 10 = SPI)
-pixel_pin = board.D10
-
 # Anzahl der NeoPixels
-num_pixels = 64
-
-# Reihenfolge der pixel-Farben - RGB oder GRB.
-ORDER = neopixel.GRB
+PIXEL_COUNT = 64
 
 # Spezifikation des Typs der Lichterkettte und einstellen der Helligkeit
 SPI_PORT   = 0
@@ -66,9 +56,10 @@ def wheel_color(pos):
 def cycle(wait, wheel):
     while True:
         for j in range(255):
-            for i in range(num_pixels):
-                pixel_index = (i * 256 // num_pixels) + j  # bewegen des 'wheels'
-                pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
+            for i in range(pixels.count()):
+                pixel_index = (i * 256 // pixels.count()) + j  # bewegen des 'wheels'
+                pixels.set_pixel(i, wheel(pixel_index & 256))  # einspeichern der Farben aus der Wheel-Funktion
+               # pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
             if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
                 print(pixels)
                 pixels.show()
@@ -105,7 +96,7 @@ def wheel_blue(pos):
 
 # Funktion zur Verteilung der Farben im Party-Modus
 def blink_color(pos):
-    if pos < 0 or pos > num_pixels:
+    if pos < 0 or pos > PIXEL_COUNT:
         r = b = g = 0
     elif pos < 10 or pos > 50:  # für erste und letzte 10 Pixel generieren einer
         r = random.randint(0, 255)  # zufälligen Farbe mit wahrscheinlich höherem Rotanteil
@@ -223,7 +214,7 @@ elif eye_input == 'chillen':
     play_tracks(tracks)
     ### LED LICHTERKETTE ###
     while True:
-        for num in range(num_pixels):
+        for num in range(PIXEL_COUNT):
             chill_color(num)  # da hier keine Veränderung über die Zeit geschieht
             # einmal je nach Postion des Pixels einfärben
         continue_playing(tracks)
@@ -237,11 +228,12 @@ elif eye_input == 'party':
     play_tracks(tracks)
     ### LED LICHTERKETTE ###
     while True:  # weil es sich immer weiter bewegen soll.
-        for num in range(num_pixels):
-            pixels[num] = blink_color(num)  # bunter Lichtstrahl durch Lichterkette
+        for num in range(PIXEL_COUNT):
+            pixels.set_pixel(num, blink_color(num))
+            #pixels[num] = blink_color(num)  # bunter Lichtstrahl durch Lichterkette
             pixels.show()
             time.sleep(0.0001)  # Dauer jeder Farbe pro Pixel
-        pixels.fill((176, 48, 96))  # Lichterkette komplett rot bzw. pink einfärben
+        pixels.fill(Adafruit_WS2801.RGB_to_color(176, 48, 96))  # Lichterkette komplett rot bzw. pink einfärben
         print(pixels)  # weil sonst die Lichterkette crasht
         pixels.show()
         time.sleep(0.0001)
@@ -253,7 +245,7 @@ else:
     ### MUSIK ###
     pygame.mixer.music.stop()
     ### LED LICHTERKETTE ###
-    pixels.fill((0, 0, 0))  # Ausschalten der Lichterkette
+    pixels.fill(Adafruit_WS2801.RGB_to_color(0, 0, 0))  # Ausschalten der Lichterkette
 
 
 
