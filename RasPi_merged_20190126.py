@@ -59,7 +59,6 @@ def cycle(wait, wheel):
             for i in range(pixels.count()):
                 pixel_index = (i * 256 // pixels.count()) + j  # bewegen des 'wheels'
                 pixels.set_pixel(i, wheel(pixel_index & 256))  # einspeichern der Farben aus der Wheel-Funktion
-               # pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
             if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
                 print(pixels)
                 pixels.show()

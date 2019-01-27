@@ -30,7 +30,7 @@ def button_next(action):                                     # ABSTRAKTER GESTAL
 
 
 
-def button_mood(input):                                     # ABSTRAKTER GESTALTEN? zB (msg,x,y,w,h,ic,ac,action)
+def button_mood(action):                                     # ABSTRAKTER GESTALTEN? zB (msg,x,y,w,h,ic,ac,action)
     # Mausposition & click
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -40,6 +40,10 @@ def button_mood(input):                                     # ABSTRAKTER GESTALT
            # pos = pygame.mouse.get_pos()
            # if 960 > mouse[1] > 860 and 540 > mouse[0] > 440:
             click_output = 'happy'
+            endloop(click_output)
+
+
+
     return click_output
 
     # Interaktivität & Farbe des Buttons in Abhängigkeit der Mausposition & Click
@@ -127,8 +131,7 @@ def moodloop():
                 if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
                     pygame.quit()
                     raise SystemExit
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                endloop(click_output)
+
 
         screen.fill(BLACK)
 
@@ -148,7 +151,7 @@ def moodloop():
         screen.blit(chillen, (x_chillen, y_chillen))
 
         click_input = 'None'
-        click_output = button_mood(click_input)
+        click_output = button_mood(endloop())
 
 
         mousecursor()
