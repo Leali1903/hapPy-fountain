@@ -7,8 +7,8 @@ pygame.init()
 pygame.font.init()
 
 # Bildschirmeinstellungen
-SCREEN_HEIGHT = 500
-SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 screen = pygame.display.set_mode(SCREEN_SIZE)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
@@ -68,6 +68,10 @@ chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
 
 TEXT_HF = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, HF_BLUE)
 
+# Logo
+hf_logo = pygame.image.load('happy(i) fountain.jpeg')
+hf_logo = pygame.transform.scale(hf_logo, (180, 110))
+
 # Lokalisierung der Mood-Buttons für Eyetracking-Abgleich
 #loc_x = 'None'
 #loc_y = 'None'
@@ -76,7 +80,6 @@ TEXT_HF = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, 
 CLOCK = pygame.time.Clock()
 FPS = 360
 
-eye_input = 'happy'
 
 ###################### EINGABE-GUI ######################
 
@@ -312,9 +315,7 @@ def endloop():
         CLOCK.tick(FPS)                                          # frames pro Sekunde
 
 
-# Logo
-hf_logo = pygame.image.load('happy(i) fountain.jpeg')
-hf_logo = pygame.transform.scale(hf_logo, (180, 110))
+
 
 # Start
 welcome_loop()

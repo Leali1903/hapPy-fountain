@@ -1,12 +1,12 @@
 from __future__ import print_function               # import für ET
 from api import EyeXInterface
-import time
 
 import pygame                                       # import für GUI
 from pygame.locals import *
 
-import math                                         # import für Abgleich
-import numpy as np
+import numpy as np                                  # import für Abgleich
+
+import socket                                       # für Socket
 
 ######################### KONSTANTEN & EINSTELLUNGEN #########################
 ### Eyetracking ###
@@ -21,8 +21,8 @@ pygame.init()
 pygame.font.init()
 
 # Bildschirmeinstellungen
-SCREEN_HEIGHT = 500
-SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 screen = pygame.display.set_mode(SCREEN_SIZE)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
@@ -86,21 +86,22 @@ TEXT_HF = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, 
 hf_logo = pygame.image.load('happy(i) fountain.jpeg')
 hf_logo = pygame.transform.scale(hf_logo, (180, 110))
 
-# Lokalisierung der Mood-Buttons für Eyetracking-Abgleich
-#loc_x = 'None'
-#loc_y = 'None'
-
 # frames pro Sekunde
 CLOCK = pygame.time.Clock()
 FPS = 360
+
+### SOCKET ###
+HOST = 'localhost'
+PORT = 65432
 
 ######################### FUNCTIONS #########################
 
 
 ### EYETRACKING ###
 def eyetracking(coordinates):           # Function zum Auslesen der Koordinaten
-    list_coordinates.append([coordinates.timestamp/1000, coordinates.x, coordinates.y]) # Liste des Zeitstempels seit Start Eyetracker (in ms/1000 = Sek), x- & y-Koordinaten
-    return list_coordinates
+    eye_x.append(coordinates.x) # Liste der x-Koordinaten
+    eye_y.append(coordinates.y)  # Liste der y-Koordinaten
+    return eye_x, eye_y
 
 
 ### GUI ###
@@ -135,7 +136,7 @@ def mouse_cursor():                                          # Funktion Mousecur
     screen.blit(cursor, pygame.mouse.get_pos())
 
 
-# 1.) Willkommensfenster
+# 1.)  Willkommensfenster
 def welcome_loop():
     welcome_exit = False
     while not welcome_exit:
@@ -201,6 +202,11 @@ def mood_loop():
             if event.type == pygame.MOUSEBUTTONDOWN:            # Klicken = nächste Loop (oder lieber nach Zeit, zB 5 Sekunden?)
                 mood_exit = True
                 mood_loop_move()
+                eye_input = data_comparison(eye_x, eye_y)
+                send_data(eye_input)
+
+                ### passender Bildschirmschoner ###
+                endloop(eye_input)
 
         screen.fill(BLACK)
 
@@ -223,9 +229,8 @@ def mood_loop():
         CLOCK.tick(FPS)                                          # frames pro Sekunde
 
 
-# Stimmungen bewegen (innerhalb Screens) ALS SIE NOCH OHNE FUNCTION WAREN HAT ES FUNLKTIONIERT!!!
+# Stimmungen bewegen
 def mood_loop_move():
-    fps = 13
     mood_move_exit = False
 
     while not mood_move_exit:
@@ -259,6 +264,7 @@ def mood_loop_move():
 
         moving_exit = False
         while not moving_exit:
+            eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]          # START des Eyetrackings
             screen.fill(BLACK)
             if x_happy > 0 and y_happy > 0:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
                 x_happy -= x
@@ -272,7 +278,8 @@ def mood_loop_move():
 
                 x_chillen += x
                 y_chillen += y
-            else:
+
+            elif y_happy <= 0:
                 x_happy = x_happy
                 y_happy = y_happy
 
@@ -285,13 +292,8 @@ def mood_loop_move():
                 x_chillen = x_chillen
                 y_chillen = y_chillen
 
-                loc_x = [x_happy, x_sad, x_party, x_chillen]
-                loc_y = [y_happy, y_sad, y_party, y_chillen]
-                print(loc_x, loc_y)
-
-                raise SystemExit
-
-            print((x_happy, y_happy))
+                moving_exit = True
+                mood_move_exit = True
 
             screen.blit(happy, (x_happy, y_happy))
             screen.blit(sad, (x_sad, y_sad))
@@ -299,12 +301,11 @@ def mood_loop_move():
             screen.blit(chillen, (x_chillen, y_chillen))
 
             pygame.display.update()
-            CLOCK.tick(15)  # frames pro Sekunde
-
-
+            CLOCK.tick(30)  # frames pro Sekunde
+            # mood_move_exit = True
 
 # 4.) Endfenster
-def endloop():
+def endloop(data):
     endexit = False
     while not endexit:
 
@@ -336,25 +337,71 @@ def endloop():
 
 
 ### Abgleich ###
-
-######################### AUSFÜHRUNG #########################
-### Eyetracker ###
-
-list_coordinates = []
-eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]
-
-sec = 10
-timeout = time.time() + sec   # sec Sekunden ab Start -> danach wird Skript gestoppt
-
-while True:
-    if time.time() > timeout:
-        print(list_coordinates)
-        break
+def gui_movement():
+    for i in range(1,391):
+        gui_x_happy.append(810-2*i)
+        gui_y_happy.append(390-i)
+        gui_x_party.append(810 - 2 * i)
+        gui_y_party.append(540 + i)
+        gui_x_chillen.append(960 + 2 * i)
+        gui_y_chillen.append(540 + i)
+        gui_x_sad.append(960 + 2 * i)
+        gui_y_sad.append(390 - i)
+    return gui_x_happy, gui_y_happy, gui_x_party, gui_y_party, gui_x_chillen, gui_y_chillen, gui_x_sad, gui_y_sad
 
 
-### GUI ###
+def correlation(x, y):
+    sd_x = np.sqrt(np.var(x))
+    sd_y = np.sqrt(np.var(y))
+    return np.cov(x,y)/(sd_x * sd_y)
+
+
+def data_comparison(data_x, data_y):
+    gui_movement()
+
+    eye_movement_x = data_x[0] - data_x[-1]
+    eye_movement_y = data_y[0] - data_y[-1]
+
+    if eye_movement_x > 0 and eye_movement_y > 0:
+        eye_input = 'happy'
+    elif eye_movement_x < 0 and eye_movement_y > 0:
+        eye_input = 'sad'
+    elif eye_movement_x < 0 and eye_movement_y < 0:
+        eye_input = 'chillen'
+    elif eye_movement_x > 0 and eye_movement_y < 0:
+        eye_input = 'party'
+
+    return eye_input
+
+
+### SOCKET ###
+def send_data(data_input):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
+        client.connect((HOST, PORT))
+        print('Connected!')
+        client.send(eye_input)
+
+
+######################### AUSFÜHRUNG: EYETRACKING UND GUI #########################
+eye_x = []
+eye_y = []
+gui_x_happy = []
+gui_y_happy = []
+gui_x_party = []
+gui_y_party = []
+gui_x_chillen = []
+gui_y_chillen = []
+gui_x_sad = []
+gui_y_sad = []
+eye_input = []
+
 welcome_loop()
 
 ### Abgleich ###
+#eye_input = data_comparison(eye_x, eye_y)
 
 ### Socket ###
+send_data(eye_input)
+
+### passender Bildschirmschoner ###
+endloop(eye_input)
