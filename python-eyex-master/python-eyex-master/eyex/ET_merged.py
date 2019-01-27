@@ -264,6 +264,7 @@ def mood_loop_move():
 
         moving_exit = False
         while not moving_exit:
+            pygame.event.get()
             eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]          # START des Eyetrackings
             screen.fill(BLACK)
             if x_happy > 0 and y_happy > 0:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
