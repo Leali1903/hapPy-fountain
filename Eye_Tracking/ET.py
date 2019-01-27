@@ -10,9 +10,14 @@ def eyetracking(coordinates):           # Function zum Auslesen der Koordinaten
     print(coordinates)
     print('x: ' + str(coordinates.x))
     print('y: ' + str(coordinates.y))
-    list_coordinates = []
-    list_coordinates = list_coordinates.append([coordinates.timestamp/1000, coordinates.x, coordinates.y]) # Liste des Zeitstenpels seit Start Eyetracker (in ms/1000 = Sek), x- & y-Koordinaten
-    return list_coordinates
+    timestamp = []
+    list_x = []
+    list_y = []
+    timestamp = timestamp.append(coordinates.timestamp)
+    list_x = list_x.append(coordinates.x)
+    list_y = list_y.append(coordinates.y)
+
+    return timestamp, list_x, list_y
 
 
 eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]
