@@ -269,6 +269,7 @@ def mood_loop_move():
                 raise SystemExit
 
             print((x_happy, y_happy))
+
             screen.blit(happy, (x_happy, y_happy))
             screen.blit(sad, (x_sad, y_sad))
             screen.blit(party, (x_party, y_party))
