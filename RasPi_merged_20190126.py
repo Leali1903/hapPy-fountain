@@ -5,8 +5,9 @@ import os
 import time
 import random
 import pygame
+import socket
 
-eye_input = 'party'
+#eye_input = 'party'
 
 ###################### KONSTANTEN UND EINSTELLUNGEN ######################
 
@@ -25,6 +26,10 @@ PIXEL_COUNT = 64
 SPI_PORT   = 0
 SPI_DEVICE = 0
 pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
+
+# Socket für Datenempfang
+HOST = 'localhost'
+PORT = 65432
 
 ###################### FUNKTIONEN DEFINIEREN ######################
 
@@ -137,7 +142,6 @@ def chill_color(pos):
 
 
 ### MUSIK FUNKTIONEN ###
-
 # Funktion zum suchen und abspielen der Tracks
 def find_tracks(folder):
     tracks = []
@@ -168,8 +172,22 @@ def continue_playing(tracks, next_track_index):
     next_track_index += 1
     return True
 
+### SOCKET ###
+def receive_data():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+        server.bind((HOST, PORT))
+        server.listen(1) # soll nur eine Verbindung eingehen
+        while True:
+            connection, address = server.accept()
+            eye_input = connection.recv(64)
+            if len(buf) > 0:
+                print eye_input
+                break
+    return eye_input
 
 ###################### STEUERUNG JE NACH INPUT ######################
+# Empfangen des Eyetracking Inputs
+eye_input = receive_data()
 
 # Einschalten des pygame-mixers für die Musik
 pygame.mixer.init()
@@ -192,8 +210,6 @@ if eye_input == 'happy':
 elif eye_input == 'sad':
     ### BRUNNEN ###
     os.system(ON)
-    time.sleep(60)  # rausnehmen weil nach Liedern ausgeschaltet
-    os.system(OFF)
     ### MUSIK ###
     folder = "/home/pi/Music/sad/"
     tracks = find_tracks(folder)
@@ -208,8 +224,6 @@ elif eye_input == 'sad':
 elif eye_input == 'chillen':
     ### BRUNNEN ###
     os.system(ON)
-    time.sleep(60)  # rausnehmen weil nach Liedern ausgeschaltet
-    os.system(OFF)
     ### MUSIK ###
     folder = "/home/pi/Music/chillen/"
     tracks = find_tracks(folder)
