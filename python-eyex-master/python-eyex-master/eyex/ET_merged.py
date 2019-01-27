@@ -91,8 +91,8 @@ CLOCK = pygame.time.Clock()
 FPS = 360
 
 ### SOCKET ###
-HOST = 'localhost'
-PORT = 65432
+HOST = '172.16.107.164'  # The server's hostname or IP address
+PORT = 60005
 
 ######################### FUNCTIONS #########################
 
@@ -305,6 +305,7 @@ def mood_loop_move():
             CLOCK.tick(50)  # frames pro Sekunde
             # mood_move_exit = True
 
+
 # 4.) Endfenster
 def endloop(data):
     endexit = False
@@ -374,10 +375,10 @@ def data_comparison(data_x, data_y):
 
 ### SOCKET ###
 def send_data(data_input):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-        client.connect((HOST, PORT))
-        print('Connected!')
-        client.send(eye_input)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        s.sendall(data_input.encode('utf-8'))
+        data = s.recv(1024)
 
 
 ######################### AUSFÜHRUNG: EYETRACKING UND GUI #########################
