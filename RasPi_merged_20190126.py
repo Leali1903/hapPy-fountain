@@ -7,7 +7,7 @@ import random
 import pygame
 import socket
 
-#eye_input = 'party'
+
 
 ###################### KONSTANTEN UND EINSTELLUNGEN ######################
 
@@ -28,8 +28,8 @@ SPI_DEVICE = 0
 pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
 
 # Socket für Datenempfang
-HOST = 'localhost'
-PORT = 65432
+HOST = '172.16.107.164'
+PORT = 60003
 
 ###################### FUNKTIONEN DEFINIEREN ######################
 
@@ -172,18 +172,24 @@ def continue_playing(tracks, next_track_index):
     next_track_index += 1
     return True
 
+
 ### SOCKET ###
 def receive_data():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
-        server.bind((HOST, PORT))
-        server.listen(1) # soll nur eine Verbindung eingehen
-        while True:
-            connection, address = server.accept()
-            eye_input = connection.recv(64)
-            if len(buf) > 0:
-                print eye_input
-                break
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        print('Listening for connections')
+        conn, addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            while True:
+                data = conn.recv(1024)
+                if not data:
+                    break
+                # conn.sendall(data)
+                print('Received data from client', repr(data))
     return eye_input
+
 
 ###################### STEUERUNG JE NACH INPUT ######################
 # Empfangen des Eyetracking Inputs
