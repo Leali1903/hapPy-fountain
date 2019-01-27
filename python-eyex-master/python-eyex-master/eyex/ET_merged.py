@@ -6,7 +6,7 @@ from pygame.locals import *
 
 import numpy as np                                  # import für Abgleich
 
-import socket                                       # für Socket
+import socket                                       # für Socket (senden von Abgleich-Daten an Pi)
 
 ######################### KONSTANTEN & EINSTELLUNGEN #########################
 ### Eyetracking ###
@@ -25,7 +25,7 @@ SCREEN_HEIGHT = 1080
 SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(SCREEN_SIZE)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
+screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
 
 # Farb- & Texteinstellungen
 BLACK = (0, 0, 0)                                              # schwarz für Boxen & Texte
@@ -204,7 +204,7 @@ def mood_loop():
                 mood_loop_move()
                 eye_input = data_comparison(eye_x, eye_y)
                 send_data(eye_input)
-
+                print(eye_input)
                 ### passender Bildschirmschoner ###
                 endloop(eye_input)
 
@@ -302,7 +302,7 @@ def mood_loop_move():
             screen.blit(chillen, (x_chillen, y_chillen))
 
             pygame.display.update()
-            CLOCK.tick(30)  # frames pro Sekunde
+            CLOCK.tick(50)  # frames pro Sekunde
             # mood_move_exit = True
 
 # 4.) Endfenster
@@ -319,16 +319,13 @@ def endloop(data):
                     pygame.quit()
                     raise SystemExit
 
-        screen.fill(BLACK)
-        pygame.display.update()
-
-        if eye_input == 'happy':
+        if data == 'happy':
             screen.blit(happy_background, (0, 0))
-        elif eye_input == 'sad':
+        elif data == 'sad':
             screen.blit(sad_background, (0, 0))
-        elif eye_input == 'party':
+        elif data == 'party':
             screen.blit(party_background, (0, 0))
-        elif eye_input == 'chillen':
+        elif data == 'chillen':
             screen.blit(chillen_background, (0, 0))
 
         screen.blit(TEXT_HF, (100, 100))
@@ -402,7 +399,7 @@ welcome_loop()
 #eye_input = data_comparison(eye_x, eye_y)
 
 ### Socket ###
-send_data(eye_input)
+#send_data(eye_input)
 
 ### passender Bildschirmschoner ###
 endloop(eye_input)
