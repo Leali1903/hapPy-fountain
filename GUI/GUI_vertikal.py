@@ -116,8 +116,8 @@ def musicloop():
         screen.fill(BLACK)
 
         # Musikicon: Startpositionen (berechnet aus Screensize & Zentrierung)
-        x = 2 * width_image_x
-        y = 0.5 * SCREEN_HEIGHT - (height_image_y / 2)
+        x = SCREEN_WIDTH / 2 - width_image_x / 2
+        y = SCREEN_HEIGHT - height_image_y * 1.5
 
         screen.blit(music, (x, y))
         pygame.display.update()
@@ -144,21 +144,21 @@ def musicloopmove():
 
         screen.fill(BLACK)
 
-        x = 2 * width_image_x
-        y = 0.5 * SCREEN_HEIGHT - (height_image_y / 2)
+        x = SCREEN_WIDTH / 2 - width_image_x / 2
+        y = SCREEN_HEIGHT - height_image_y * 1.5
 
         screen.blit(music, (x, y))
         pygame.display.update()
         clock.tick(FPS)
 
-        x_move = 2
-        y_move = 0
+        x_move = 0
+        y_move = -2
 
         movingexit = False
         while not movingexit:
             screen.fill(BLACK)
 
-            if x < SCREEN_WIDTH - 3* width_image_x:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+            if y > 0 + height_image_y * 1.5:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
                 x += x_move
                 y += y_move
 
