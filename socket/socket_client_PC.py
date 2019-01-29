@@ -64,7 +64,7 @@
 import socket
 
 HOST = '172.16.107.164'  # The server's hostname or IP address
-PORT = 60000        # The port used by the server
+PORT = 60002
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))

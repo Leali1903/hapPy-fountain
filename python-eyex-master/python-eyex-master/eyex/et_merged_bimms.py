@@ -203,7 +203,7 @@ def mood_loop():
                 mood_exit = True
                 mood_loop_move()
                 eye_input = data_comparison(eye_x, eye_y)
-                send_data(eye_input)
+                #send_data(eye_input)
                 print(eye_input)
                 ### passender Bildschirmschoner ###
                 endloop(eye_input)
@@ -307,7 +307,7 @@ def mood_loop_move():
 
 
 # 4.) Endfenster
-def endloop(data):
+def endloop():
     endexit = False
     while not endexit:
 
@@ -332,8 +332,26 @@ def endloop(data):
         screen.blit(TEXT_HF, (100, 100))
         screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
         pygame.display.update()
-        CLOCK.tick(FPS)                                          # frames pro Sekunde
+        CLOCK.tick(FPS)      # frames pro Sekunde
 
+        pygame.display.update()
+        CLOCK.tick()
+
+        pygame.mixer.music.load('Kygo-Stay-Intro.mp3')
+        pygame.mixer.music.play()
+
+        while pygame.mixer.music.get_busy():
+
+            # Einstellungen zum Beenden der GUI
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    endexit = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                        pygame.quit()
+                        raise SystemExit
+
+            pygame.time.Clock().tick(10)
 
 ### Abgleich ###
 def gui_movement():
