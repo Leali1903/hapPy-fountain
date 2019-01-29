@@ -126,7 +126,8 @@ def musicloop():
         x = center_of_rotation_x + radius * cos(angle)  # Starting position x
         y = center_of_rotation_y - radius * sin(angle)  # Starting position y
 
-        screen.blit(music, (x, y))
+        coords = center_of_rotation_x - 100, center_of_rotation_y - 300
+        screen.blit(music, (coords[0], coords[1]))
         pygame.display.update()
         clock.tick(FPS)                                          # frames pro Sekunde
 
@@ -138,8 +139,8 @@ def move_coords(angle, radius, coords):
 def musicloopmove():
 
     time.clock()
-    fps = 30
-    coords = 400, 200
+    fps = 50
+    coords = center_of_rotation_x-100, center_of_rotation_y-300
     angle = 0
     rect = pygame.Rect(*coords, 20, 20)
     #music = pygame.image.load('musicon.png')
@@ -149,6 +150,17 @@ def musicloopmove():
     musicmoveexit = False
 
     while not musicmoveexit:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                musicexit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                    pygame.quit()
+                    raise SystemExit
+            if event.type == pygame.MOUSEBUTTONDOWN:  # Klicken = nächste Loop (oder lieber nach Zeit, zB 5 Sekunden?)
+                musicexit = True
+                musicloopmove()
 
         clock = pygame.time.Clock()
 
@@ -163,7 +175,7 @@ def musicloopmove():
             coords = move_coords(angle, 2, coords)
             rect.topleft = coords
 
-        screen.fill((0, 0, 30))
+        screen.fill(BLACK)
         # screen.fill((0, 150, 0), rect)
         screen.blit(music, (coords[0], coords[1]))
         # pygame.display.update()
@@ -202,6 +214,16 @@ def endloop():
         pygame.mixer.music.play()
 
         while pygame.mixer.music.get_busy():
+
+            # Einstellungen zum Beenden der GUI
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    endexit = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                        pygame.quit()
+                        raise SystemExit
+
             pygame.time.Clock().tick(10)
 
 
@@ -212,11 +234,11 @@ mixer.init()                                                   # Soundmodul init
 
 
 # Bildschirmeinstellungen
-SCREEN_HEIGHT = 900
-SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(SCREEN_SIZE)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
+screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
 
 # Farb- & Texteinstellungen
 BLACK = (0, 0, 0)                                              # schwarz für Boxen & Texte
