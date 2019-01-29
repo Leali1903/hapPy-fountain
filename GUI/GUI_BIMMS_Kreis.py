@@ -6,6 +6,9 @@ import time
 import math
 from math import sin,cos,pi, radians
 
+from __future__ import print_function               # import für ET
+from api import EyeXInterface
+
 
 eye_input = 'happy'
 
@@ -126,23 +129,31 @@ def musicloop():
         x = center_of_rotation_x + radius * cos(angle)  # Starting position x
         y = center_of_rotation_y - radius * sin(angle)  # Starting position y
 
-        coords = center_of_rotation_x - 100, center_of_rotation_y - 300
-        screen.blit(music, (coords[0], coords[1]))
+        coords_1 = center_of_rotation_x - 500, center_of_rotation_y - 300
+        coords_2 = center_of_rotation_x + 250, center_of_rotation_y - 300
+        screen.blit(music, (coords_1[0], coords_1[1]))
+        screen.blit(music2, (coords_2[0], coords_2[1]))
+
         pygame.display.update()
         clock.tick(FPS)                                          # frames pro Sekunde
 
-def move_coords(angle, radius, coords):
+def move_coords_right(angle, radius, coords):
     theta = math.radians(angle)
     return coords[0] + radius * math.cos(theta), coords[1] + radius * math.sin(theta)
+
+def move_coords_left(angle, radius, coords):
+    theta = math.radians(angle)
+    return coords[0] - radius * math.cos(theta), coords[1] + radius * math.sin(theta)
 
 # Musikicon bewegen
 def musicloopmove():
 
     time.clock()
-    fps = 50
-    coords = center_of_rotation_x-100, center_of_rotation_y-300
+    fps = 30
+    coords_1 = center_of_rotation_x-500, center_of_rotation_y-300
+    coords_2 = center_of_rotation_x+250, center_of_rotation_y - 300
     angle = 0
-    rect = pygame.Rect(*coords, 20, 20)
+    #rect = pygame.Rect(*coords, 20, 20)
     #music = pygame.image.load('musicon.png')
     speed = 50
     next_tick = 500
@@ -172,24 +183,28 @@ def musicloopmove():
         if ticks > next_tick:
             next_tick += speed
             angle += 1
-            coords = move_coords(angle, 2, coords)
-            rect.topleft = coords
+            coords_1 = move_coords_right(angle, 4, coords_1)
+            coords_2 = move_coords_left(angle, 4, coords_2)
+            #rect.topleft = coords
 
         screen.fill(BLACK)
         # screen.fill((0, 150, 0), rect)
-        screen.blit(music, (coords[0], coords[1]))
+        screen.blit(music, (coords_1[0], coords_1[1]))
+        screen.blit(music2, (coords_2[0], coords_2[1]))
         # pygame.display.update()
         pygame.display.flip()
         clock.tick(fps)
 
-        if time.clock() > 15:
+        if time.clock() > 10:
+            eye_input = data_comparison(eye_x, eye_y)
+        if time.clock() > 20:
             musicmoveexit = True
-            endloop()
+            endloop(eye_input)
 
 
 
 # 4.) Endfenster
-def endloop():
+def endloop(data):
     endexit = False
     while not endexit:
 
@@ -202,16 +217,29 @@ def endloop():
                     pygame.quit()
                     raise SystemExit
 
-        screen.fill(BLACK)
-        screen.blit(party_background, (0, 0))
-        screen.blit(text, (100, 100))
-        screen.blit(logo, (SCREEN_WIDTH*(6/8), 100))
+        if data == 'party':
+            screen.fill(BLACK)
+            screen.blit(party_background, (0, 0))
+            screen.blit(text, (100, 100))
+            screen.blit(logo, (SCREEN_WIDTH*(6/8), 100))
 
-        pygame.display.update()
-        clock.tick()
+            pygame.display.update()
+            clock.tick()
 
-        pygame.mixer.music.load('Kygo-Stay-Intro.mp3')
-        pygame.mixer.music.play()
+            pygame.mixer.music.load('Kygo-Stay-Intro.mp3')
+            pygame.mixer.music.play()
+
+        elif data == 'chillen':
+            screen.fill(BLACK)
+            screen.blit(chillen_background, (0, 0))
+            screen.blit(text, (100, 100))
+            screen.blit(logo, (SCREEN_WIDTH * (6 / 8), 100))
+
+            pygame.display.update()
+            clock.tick()
+
+            pygame.mixer.music.load('Sofi-Tukker-Fck-They-Dirty.mp3')
+            pygame.mixer.music.play()
 
         while pygame.mixer.music.get_busy():
 
@@ -226,6 +254,31 @@ def endloop():
 
             pygame.time.Clock().tick(10)
 
+
+def data_comparison(data_x, data_y):
+    #gui_movement()
+
+    eye_movement_x = data_x[0] - data_x[-1]
+    eye_movement_y = data_y[0] - data_y[-1]
+
+    if eye_movement_x < 0 and eye_movement_y < 0:
+        eye_input = 'chillen'
+    elif eye_movement_x > 0 and eye_movement_y < 0:
+        eye_input = 'party'
+
+    return eye_input
+
+
+### EYETRACKING ###
+def eyetracking(coordinates):           # Function zum Auslesen der Koordinaten
+    eye_x.append(coordinates.x) # Liste der x-Koordinaten
+    eye_y.append(coordinates.y)  # Liste der y-Koordinaten
+    return eye_x, eye_y
+
+
+### Eyetracking ###
+lib_location = 'C:/Program Files (x86)/Tobii/Tobii EyeX Interaction/Tobii.EyeX.Client.dll'          # Speicherort dll-Datei
+eye_api = EyeXInterface(lib_location)               # Zugriff auf die dll-Datei des EyeX mittels Function EyeXInterface aus api.py
 
 # Pygame initialisieren
 pygame.init()
@@ -280,13 +333,17 @@ width_image_x = 150
 height_image_y = 150
 size_image = (width_image_x, height_image_y)
 
-music = pygame.image.load('musicon.png')
+music = pygame.image.load('chillen.png')
 music = pygame.transform.scale(music, size_image)
+music2 = pygame.image.load('party.png')
+music2 = pygame.transform.scale(music2, size_image)
 
 # 3.) Endfenster & kontinuierliches Hintergrundbild
 # Graphiken laden & verkleinern
 party_background = pygame.image.load('party.jpg')
 party_background = pygame.transform.scale(party_background, SCREEN_SIZE)
+chillen_background = pygame.image.load('chillen.jpg')
+chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
 
 text = MYFONT_BIG.render('Genieße deinen Museyec-Moment!', False, BLUE)
 

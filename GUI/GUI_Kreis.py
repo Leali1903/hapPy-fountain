@@ -2,6 +2,10 @@ import pygame                                                  # Pygame-Modul im
 from pygame import mixer
 from pygame.locals import *
 
+import math
+from math import sin,cos,pi, radians
+
+
 eye_input = 'happy'
 
 ###################### EINGABE-GUI ######################
@@ -116,8 +120,10 @@ def musicloop():
         screen.fill(BLACK)
 
         # Musikicon: Startpositionen (berechnet aus Screensize & Zentrierung)
-        x = 3 * width_image_x
-        y = 0.5 * SCREEN_HEIGHT - (height_image_y / 2)
+        #x = 3 * width_image_x
+        #y = 0.5 * SCREEN_HEIGHT - (height_image_y / 2)
+        x = center_of_rotation_x + radius * cos(angle)  # Starting position x
+        y = center_of_rotation_y - radius * sin(angle)  # Starting position y
 
         screen.blit(music, (x, y))
         pygame.display.update()
@@ -127,7 +133,7 @@ def musicloop():
 # Musikicon bewegen (innerhalb Screens)
 def musicloopmove():
 
-    fps = 10
+    fps = 30
     musicmoveexit = False
 
     while not musicmoveexit:
@@ -144,36 +150,55 @@ def musicloopmove():
 
         screen.fill(BLACK)
 
-        x = 3 * width_image_x
-        y = 0.5 * SCREEN_HEIGHT - (height_image_y / 2)
+        # x = 3 * width_image_x
+        # y = 0.5 * SCREEN_HEIGHT - (height_image_y / 2)
+        #
+        # screen.blit(music, (x, y))
+        # pygame.display.update()
+        # clock.tick(FPS)
 
-        screen.blit(music, (x, y))
-        pygame.display.update()
-        clock.tick(FPS)
-
-        x_move = 0.25
+        # x_move = 0.25
         # y_move = 0
         # r = 0.5
 
-        movingexit = False
-        while not movingexit:
-            screen.fill(BLACK)
+        #movingexit = False
+        #while not movingexit:
+        #   screen.fill(BLACK)
+
+
+
+        x = center_of_rotation_x + radius * cos(angle)  # Starting position x
+        y = center_of_rotation_y - radius * sin(angle)  # Starting position y
+
+        screen.blit(music, (x, y))  # Draw current x,y
+
+        angle = angle + omega  # New angle, we add angular velocity
+        x = x + radius * omega * cos(angle + pi / 2)  # New x
+        y = y - radius * omega * sin(angle + pi / 2)  # New y
+
+            # radius = 100
+            #
+            # for angle in range(0, 361):
+            #     theta = math.radians(angle)
+            #     x += radius * math.cos(theta)
+            #     y += radius * math.sin(theta)
+            #     print(x, y)
 
             #kreisfunktion f = (r^2 - x^2)^(1/2)
 
-            if 0 < x < SCREEN_WIDTH or 0 < y < SCREEN_HEIGHT:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
-                y += x_move ** 2
-                x += 1
-                x_move += 0.5
+            # if 0 < x < SCREEN_WIDTH or 0 < y < SCREEN_HEIGHT:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+            #     y += x_move ** 2
+            #     x += 1
+            #     x_move += 0.5
+            #
+            # else:
+            #     x = x
+            #     y = y
+            #     endloop()
 
-            else:
-                x = x
-                y = y
-                endloop()
-
-            screen.blit(music, (x, y))
-            pygame.display.update()
-            clock.tick(fps)  # frames pro Sekunde
+        screen.blit(music, (x, y))
+            #pygame.display.update()
+        clock.tick(fps)  # frames pro Sekunde
 
 
 # 4.) Endfenster
@@ -273,5 +298,16 @@ text = MYFONT_BIG.render('Genieße deinen Museyec-Moment!', False, BLUE)
 clock = pygame.time.Clock()
 FPS = 360
 
+# kreis
+
+center_of_rotation_x = SCREEN_WIDTH / 2
+center_of_rotation_y = SCREEN_HEIGHT / 2
+radius = 100
+angle = radians(45)  # pi/4 # starting angle 45 degrees
+omega = 0.1  # Angular velocity
+x = center_of_rotation_x + radius * cos(angle)  # Starting position x
+y = center_of_rotation_y - radius * sin(angle)  # Starting position y
+
 # Start
 welcomeloop()
+

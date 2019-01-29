@@ -203,7 +203,7 @@ def mood_loop():
                 mood_exit = True
                 mood_loop_move()
                 eye_input = data_comparison(eye_x, eye_y)
-                send_data(eye_input)
+               # send_data(eye_input)
                 print(eye_input)
                 ### passender Bildschirmschoner ###
                 endloop(eye_input)
@@ -336,23 +336,23 @@ def endloop(data):
 
 
 ### Abgleich ###
-def gui_movement():
-    for i in range(1,391):
-        gui_x_happy.append(810-2*i)
-        gui_y_happy.append(390-i)
-        gui_x_party.append(810 - 2 * i)
-        gui_y_party.append(540 + i)
-        gui_x_chillen.append(960 + 2 * i)
-        gui_y_chillen.append(540 + i)
-        gui_x_sad.append(960 + 2 * i)
-        gui_y_sad.append(390 - i)
-    return gui_x_happy, gui_y_happy, gui_x_party, gui_y_party, gui_x_chillen, gui_y_chillen, gui_x_sad, gui_y_sad
-
-
-def correlation(x, y):
-    sd_x = np.sqrt(np.var(x))
-    sd_y = np.sqrt(np.var(y))
-    return np.cov(x,y)/(sd_x * sd_y)
+# def gui_movement():
+#     for i in range(1,391):
+#         gui_x_happy.append(810-2*i)
+#         gui_y_happy.append(390-i)
+#         gui_x_party.append(810 - 2 * i)
+#         gui_y_party.append(540 + i)
+#         gui_x_chillen.append(960 + 2 * i)
+#         gui_y_chillen.append(540 + i)
+#         gui_x_sad.append(960 + 2 * i)
+#         gui_y_sad.append(390 - i)
+#     return gui_x_happy, gui_y_happy, gui_x_party, gui_y_party, gui_x_chillen, gui_y_chillen, gui_x_sad, gui_y_sad
+#
+#
+# def correlation(x, y):
+#     sd_x = np.sqrt(np.var(x))
+#     sd_y = np.sqrt(np.var(y))
+#     return np.cov(x,y)/(sd_x * sd_y)
 
 
 def data_comparison(data_x, data_y):

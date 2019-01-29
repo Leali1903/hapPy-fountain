@@ -1,8 +1,13 @@
+from __future__ import print_function  # import für ET
+from api import EyeXInterface
+
 import pygame                                                  # Pygame-Modul importieren für GUI
 from pygame import mixer
 from pygame.locals import *
 
-eye_input = 'happy'
+eye_input = []
+eye_x = []
+eye_y = []
 
 ###################### EINGABE-GUI ######################
 
@@ -116,10 +121,14 @@ def musicloop():
         screen.fill(BLACK)
 
         # Musikicon: Startpositionen (berechnet aus Screensize & Zentrierung)
-        x = SCREEN_WIDTH / 2 - width_image_x / 2
-        y = SCREEN_HEIGHT - height_image_y * 1.5
+        x = SCREEN_WIDTH / 2 - (width_image_x - 5)
+        y = height_image_y * 2.5
+
+        x2 = SCREEN_WIDTH / 2 + (width_image_x + 5)
+        y2 = SCREEN_HEIGHT - height_image_y * 1.50
 
         screen.blit(music, (x, y))
+        screen.blit(music2, (x2, y2))
         pygame.display.update()
         clock.tick(FPS)                                          # frames pro Sekunde
 
@@ -131,7 +140,6 @@ def musicloopmove():
     musicmoveexit = False
 
     while not musicmoveexit:
-
         # Einstellungen zum Beenden der GUI
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -144,10 +152,15 @@ def musicloopmove():
 
         screen.fill(BLACK)
 
-        x = SCREEN_WIDTH / 2 - width_image_x / 2
-        y = SCREEN_HEIGHT - height_image_y * 1.5
+        x = SCREEN_WIDTH / 2 - (width_image_x - 5)
+        y = height_image_y * 2.5
+
+        x2 = SCREEN_WIDTH / 2 + (width_image_x + 5)
+        y2 = SCREEN_HEIGHT - height_image_y * 1.50
 
         screen.blit(music, (x, y))
+        screen.blit(music2, (x2, y2))
+
         pygame.display.update()
         clock.tick(FPS)
 
@@ -156,24 +169,30 @@ def musicloopmove():
 
         movingexit = False
         while not movingexit:
+            pygame.event.get()
+            eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]  # START des Eyetrackings
             screen.fill(BLACK)
 
             if y > 0 + height_image_y * 1.5:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
                 x += x_move
                 y += y_move
+                x -= x_move
+                y -= y_move
 
             else:
+                eye_input = data_comparison(eye_x, eye_y)
                 x = x
                 y = y
-                endloop()
+                endloop(eye_input)
 
             screen.blit(music, (x, y))
+            screen.blit(music2, (x2, y2))
             pygame.display.update()
             clock.tick(fps)  # frames pro Sekunde
 
 
 # 4.) Endfenster
-def endloop():
+def endloop(data):
     endexit = False
     while not endexit:
 
@@ -186,16 +205,29 @@ def endloop():
                     pygame.quit()
                     raise SystemExit
 
-        screen.fill(BLACK)
-        screen.blit(party_background, (0, 0))
-        screen.blit(text, (100, 100))
-        screen.blit(logo, (SCREEN_WIDTH*(6/8), 100))
+        if data == 'party':
+            screen.fill(BLACK)
+            screen.blit(party_background, (0, 0))
+            screen.blit(text, (100, 100))
+            screen.blit(logo, (SCREEN_WIDTH*(6/8), 100))
 
-        pygame.display.update()
-        clock.tick()
+            pygame.display.update()
+            clock.tick()
 
-        pygame.mixer.music.load('Kygo-Stay-Intro.mp3')
-        pygame.mixer.music.play()
+            pygame.mixer.music.load('Kygo-Stay-Intro.mp3')
+            pygame.mixer.music.play()
+
+        elif data == 'chillen':
+            screen.fill(BLACK)
+            screen.blit(chillen_background, (0, 0))
+            screen.blit(text, (100, 100))
+            screen.blit(logo, (SCREEN_WIDTH * (6 / 8), 100))
+
+            pygame.display.update()
+            clock.tick()
+
+            pygame.mixer.music.load('Sofi-Tukker-Fck-They-Dirty.mp3')
+            pygame.mixer.music.play()
 
         while pygame.mixer.music.get_busy():
 
@@ -209,6 +241,29 @@ def endloop():
                         raise SystemExit
 
             pygame.time.Clock().tick(10)
+
+
+def data_comparison(data_x, data_y):
+    #gui_movement()
+
+    eye_movement_x = data_x[0] - data_x[-1]
+    eye_movement_y = data_y[0] - data_y[-1]
+
+    if eye_movement_y < 0:
+        eye_input = 'chillen'
+    elif eye_movement_y > 0:
+        eye_input = 'party'
+    else:
+        print('No Input')
+
+    return eye_input
+
+
+### EYETRACKING ###
+def eyetracking(coordinates):           # Function zum Auslesen der Koordinaten
+    eye_x.append(coordinates.x) # Liste der x-Koordinaten
+    eye_y.append(coordinates.y)  # Liste der y-Koordinaten
+    return eye_x, eye_y
 
 
 # Pygame initialisieren
@@ -264,13 +319,19 @@ width_image_x = 150
 height_image_y = 150
 size_image = (width_image_x, height_image_y)
 
-music = pygame.image.load('musicon.png')
+music = pygame.image.load('chillen.png')
 music = pygame.transform.scale(music, size_image)
+
+music2 = pygame.image.load('party.png')
+music2 = pygame.transform.scale(music2, size_image)
 
 # 3.) Endfenster & kontinuierliches Hintergrundbild
 # Graphiken laden & verkleinern
 party_background = pygame.image.load('party.jpg')
 party_background = pygame.transform.scale(party_background, SCREEN_SIZE)
+
+chillen_background = pygame.image.load('chillen.jpg')
+chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
 
 text = MYFONT_BIG.render('Genieße deinen Museyec-Moment!', False, BLUE)
 
