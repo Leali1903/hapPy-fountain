@@ -22,7 +22,7 @@ import socket
 
 import socket
 
-HOST = '127.0.0.1'
+HOST = '172.16.106.189'
 PORT = 65432
 
 
