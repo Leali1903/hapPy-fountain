@@ -7,8 +7,6 @@ import random
 import pygame
 import socket
 
-
-
 ###################### KONSTANTEN UND EINSTELLUNGEN ######################
 
 ### BRUNNEN ###
@@ -29,7 +27,7 @@ pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, spi=SPI.SpiDev(SPI_PORT, SPI_
 
 # Socket für Datenempfang
 HOST = '172.16.107.164'
-PORT = 60003
+PORT = 60005
 
 ###################### FUNKTIONEN DEFINIEREN ######################
 
@@ -182,12 +180,9 @@ def receive_data():
         conn, addr = s.accept()
         with conn:
             print('Connected by', addr)
-            while True:
-                data = conn.recv(1024)
-                if not data:
-                    break
-                # conn.sendall(data)
-                print('Received data from client', repr(data))
+            eye_input = conn.recv(1024).decode('utf-8')
+            # conn.sendall(data)
+            print('Received data from client', repr(eye_input))
     return eye_input
 
 
@@ -272,12 +267,5 @@ else:
     pygame.mixer.music.stop()
     ### LED LICHTERKETTE ###
     pixels.fill(Adafruit_WS2801.RGB_to_color(0, 0, 0))  # Ausschalten der Lichterkette
-
-
-
-
-
-
-
 
 
