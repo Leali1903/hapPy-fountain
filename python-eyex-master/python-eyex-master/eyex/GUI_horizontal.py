@@ -117,6 +117,9 @@ def musicloop():
             if event.type == pygame.MOUSEBUTTONDOWN:            # Klicken = nächste Loop (oder lieber nach Zeit, zB 5 Sekunden?)
                 musicexit = True
                 musicloopmove()
+                eye_input = data_comparison(eye_x, eye_y)
+                endloop(eye_input)
+
 
         screen.fill(BLACK)
 
@@ -181,6 +184,7 @@ def musicloopmove():
 
             else:
                 eye_input = data_comparison(eye_x, eye_y)
+                movingexit = True
                 x = x
                 y = y
                 endloop(eye_input)
@@ -260,7 +264,8 @@ def data_comparison(data_x, data_y):
 
 
 ### EYETRACKING ###
-def eyetracking(coordinates):           # Function zum Auslesen der Koordinaten
+def eyetracking(coordinates): # Function zum Auslesen der Koordinaten
+    print(coordinates.y)
     eye_x.append(coordinates.x) # Liste der x-Koordinaten
     eye_y.append(coordinates.y)  # Liste der y-Koordinaten
     return eye_x, eye_y

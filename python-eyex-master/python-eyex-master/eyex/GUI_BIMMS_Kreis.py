@@ -203,11 +203,9 @@ def musicloopmove():
         pygame.display.flip()
         clock.tick(fps)
 
-
-       # if time.clock() > 8:
-           # eye_input = data_comparison(eye_x, eye_y)
         if time.clock() > 20:
-            #endloop(eye_input)
+            eye_input = data_comparison(eye_x, eye_y)
+            endloop(eye_input)
             musicmoveexit = True
 
 
