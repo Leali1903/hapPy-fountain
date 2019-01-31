@@ -121,11 +121,11 @@ def musicloop():
         screen.fill(BLACK)
 
         # Musikicon: Startpositionen (berechnet aus Screensize & Zentrierung)
-        x = SCREEN_WIDTH / 2 - (width_image_x - 5)
-        y = height_image_y * 2.5
+        x = SCREEN_WIDTH / 2 - width_image_x - 5
+        y = height_image_y
 
-        x2 = SCREEN_WIDTH / 2 + (width_image_x + 5)
-        y2 = SCREEN_HEIGHT - height_image_y * 1.50
+        x2 = SCREEN_WIDTH / 2 + 5
+        y2 = SCREEN_HEIGHT - height_image_y * 2
 
         screen.blit(music, (x, y))
         screen.blit(music2, (x2, y2))
@@ -152,11 +152,12 @@ def musicloopmove():
 
         screen.fill(BLACK)
 
-        x = SCREEN_WIDTH / 2 - (width_image_x - 5)
-        y = height_image_y * 2.5
+        # Musikicon: Startpositionen (berechnet aus Screensize & Zentrierung)
+        x = SCREEN_WIDTH / 2 - width_image_x - 5
+        y = height_image_y
 
-        x2 = SCREEN_WIDTH / 2 + (width_image_x + 5)
-        y2 = SCREEN_HEIGHT - height_image_y * 1.50
+        x2 = SCREEN_WIDTH / 2 + 5
+        y2 = SCREEN_HEIGHT - height_image_y * 2
 
         screen.blit(music, (x, y))
         screen.blit(music2, (x2, y2))
@@ -173,11 +174,11 @@ def musicloopmove():
             eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]  # START des Eyetrackings
             screen.fill(BLACK)
 
-            if y > 0 + height_image_y * 1.5:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+            if 0 < y > 1080:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
                 x += x_move
                 y += y_move
-                x -= x_move
-                y -= y_move
+                x2 -= x_move
+                y2 -= y_move
 
             else:
                 eye_input = data_comparison(eye_x, eye_y)
@@ -226,7 +227,7 @@ def endloop(data):
             pygame.display.update()
             clock.tick()
 
-            pygame.mixer.music.load('Sofi-Tukker-Fck-They-Dirty.mp3')
+            pygame.mixer.music.load('08.Dark Blue Echoes.mp3')
             pygame.mixer.music.play()
 
         while pygame.mixer.music.get_busy():
@@ -246,7 +247,7 @@ def endloop(data):
 def data_comparison(data_x, data_y):
     #gui_movement()
 
-    eye_movement_x = data_x[0] - data_x[-1]
+   # eye_movement_x = data_x[0] - data_x[-1]
     eye_movement_y = data_y[0] - data_y[-1]
 
     if eye_movement_y < 0:
@@ -274,7 +275,6 @@ eye_api = EyeXInterface(lib_location)               # Zugriff auf die dll-Datei 
 pygame.init()
 pygame.font.init()                                             # Textmodul initialisieren -> braucht man das?
 mixer.init()                                                   # Soundmodul initialisieren
-
 
 # Bildschirmeinstellungen
 SCREEN_HEIGHT = 1080

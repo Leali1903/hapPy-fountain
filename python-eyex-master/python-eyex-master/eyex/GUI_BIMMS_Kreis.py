@@ -248,7 +248,7 @@ def endloop(data):
             pygame.display.update()
             clock.tick()
 
-            pygame.mixer.music.load('Sofi-Tukker-Fck-They-Dirty.mp3')
+            pygame.mixer.music.load('08.Dark Blue Echoes.mp3')
             pygame.mixer.music.play()
 
         while pygame.mixer.music.get_busy():

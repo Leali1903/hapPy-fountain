@@ -1,5 +1,4 @@
 from __future__ import print_function  # import für ET
-
 from api import EyeXInterface
 
 import pygame                                                  # Pygame-Modul importieren für GUI
@@ -128,7 +127,6 @@ def musicloop():
         x2 = SCREEN_WIDTH - 4 * width_image_x
         y2 = 0.5 * SCREEN_HEIGHT + (height_image_y)
 
-
         screen.blit(music, (x, y))
         screen.blit(music2, (x2, y2))
         pygame.display.update()
@@ -175,7 +173,7 @@ def musicloopmove():
             eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]  # START des Eyetrackings
             screen.fill(BLACK)
 
-            if x < SCREEN_WIDTH - 3* width_image_x:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+            if x < SCREEN_WIDTH - 3* width_image_x:  # Grenze des Screens, an der die Images stehen bleiben sollen
                 x += x_move
                 y += y_move
                 x2 -= x_move
@@ -228,7 +226,7 @@ def endloop(data):
             pygame.display.update()
             clock.tick()
 
-            pygame.mixer.music.load('Sofi-Tukker-Fck-They-Dirty.mp3')
+            pygame.mixer.music.load('08.Dark Blue Echoes.mp3')
             pygame.mixer.music.play()
 
         while pygame.mixer.music.get_busy():
@@ -266,6 +264,7 @@ def eyetracking(coordinates):           # Function zum Auslesen der Koordinaten
     eye_x.append(coordinates.x) # Liste der x-Koordinaten
     eye_y.append(coordinates.y)  # Liste der y-Koordinaten
     return eye_x, eye_y
+
 
 ### Eyetracking ###
 lib_location = 'C:/Program Files (x86)/Tobii/Tobii EyeX Interaction/Tobii.EyeX.Client.dll'          # Speicherort dll-Datei
