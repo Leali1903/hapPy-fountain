@@ -7,7 +7,7 @@ import Adafruit_WS2801
 import Adafruit_GPIO.SPI as SPI
 
 # Configure the count of pixels:
-PIXEL_COUNT = 32
+PIXEL_COUNT = 3
 
 # Alternatively specify a hardware SPI connection on /dev/spidev0.0:
 SPI_PORT = 0
@@ -106,7 +106,9 @@ if __name__ == "__main__":
     pixels.show()  # Make sure to call show() after changing any pixels!
 
     rainbow_cycle_successive(pixels, wait=0.1)
+    pixels.show()
     rainbow_cycle(pixels, wait=0.01)
+    pixels.show()
 
     brightness_decrease(pixels)
 
@@ -120,5 +122,3 @@ if __name__ == "__main__":
     rainbow_colors(pixels)
 
     brightness_decrease(pixels)
-
-
