@@ -1,11 +1,10 @@
-import os
-import time
 import board
 import neopixel
+import os
+import time
 import random
 import pygame
-
-
+import socket
 
 ###################### KONSTANTEN UND EINSTELLUNGEN ######################
 
@@ -21,15 +20,18 @@ OFF = 'sudo /home/pi/wiringPi/433Utils/RPi_utils/codesend 5506388'  # Befehl zum
 pixel_pin = board.D10
 
 # Anzahl der NeoPixels
-num_pixels = 64
+PIXEL_COUNT = 64
 
 # Reihenfolge der pixel-Farben - RGB oder GRB.
 ORDER = neopixel.GRB
 
 # Spezifikation des Typs der Lichterkettte und einstellen der Helligkeit
-pixels = neopixel.NeoPixel(pixel_pin, num_pixels, brightness=0.2, auto_write=False,
+pixels = neopixel.NeoPixel(pixel_pin, PIXEL_COUNT, brightness=0.2, auto_write=False,
                            pixel_order=ORDER)
 
+# Socket für Datenempfang
+HOST = '172.16.107.164'
+PORT = 60005
 
 ###################### FUNKTIONEN DEFINIEREN ######################
 
@@ -141,8 +143,8 @@ def chill_color(pos):
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
 
-### MUSIK FUNKTIONEN ###
 
+### MUSIK FUNKTIONEN ###
 # Funktion zum suchen und abspielen der Tracks
 def find_tracks(folder):
     tracks = []
@@ -174,7 +176,24 @@ def continue_playing(tracks, next_track_index):
     return True
 
 
+### SOCKET ###
+def receive_data():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        print('Listening for connections')
+        conn, addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            eye_input = conn.recv(1024).decode('utf-8')
+            # conn.sendall(data)
+            print('Received data from client', repr(eye_input))
+    return eye_input
+
+
 ###################### STEUERUNG JE NACH INPUT ######################
+# Empfangen des Eyetracking Inputs
+eye_input = receive_data()
 
 # Einschalten des pygame-mixers für die Musik
 pygame.mixer.init()
@@ -197,31 +216,32 @@ if eye_input == 'happy':
 elif eye_input == 'sad':
     ### BRUNNEN ###
     os.system(ON)
-    time.sleep(60)  # rausnehmen weil nach Liedern ausgeschaltet
-    os.system(OFF)
     ### MUSIK ###
     folder = "/home/pi/Music/sad/"
     tracks = find_tracks(folder)
     play_tracks(tracks)
+    next_track_index = 0
     ### LED LICHTERKETTE ###
     while True:  # weil es sich immer weiter bewegen soll.
         cycle(0.001, wheel_blue)  # zum Verändern der Blautöne über die Zeit pro Pixel
         continue_playing(tracks)
+        if continue_playing(tracks, next_track_index) == False:
+            break
 elif eye_input == 'chillen':
     ### BRUNNEN ###
     os.system(ON)
-    time.sleep(60)  # rausnehmen weil nach Liedern ausgeschaltet
-    os.system(OFF)
     ### MUSIK ###
     folder = "/home/pi/Music/chillen/"
     tracks = find_tracks(folder)
     play_tracks(tracks)
+    next_track_index = 0
     ### LED LICHTERKETTE ###
     while True:
-        for num in range(num_pixels):
-            chill_color(num)  # da hier keine Veränderung über die Zeit geschieht
-            # einmal je nach Postion des Pixels einfärben
-        continue_playing(tracks)
+        for num in range(PIXEL_COUNT):
+            pixels[PIXEL_COUNT] = chill_color(PIXEL_COUNT)
+            pixels.show() # einmal je nach Postion des Pixels einfärben
+        if continue_playing(tracks, next_track_index) == False:
+            break
 
 elif eye_input == 'party':
     ### BRUNNEN ###
@@ -230,17 +250,20 @@ elif eye_input == 'party':
     folder = "/home/pi/Music/party/"
     tracks = find_tracks(folder)
     play_tracks(tracks)
+    next_track_index = 0
     ### LED LICHTERKETTE ###
     while True:  # weil es sich immer weiter bewegen soll.
-        for num in range(num_pixels):
-            pixels[num] = blink_color(num)  # bunter Lichtstrahl durch Lichterkette
+        for num in range(PIXEL_COUNT):
+            pixels[PIXEL_COUNT] = blink_color(PIXEL_COUNT)
+            #pixels[num] = blink_color(num)  # bunter Lichtstrahl durch Lichterkette
             pixels.show()
             time.sleep(0.0001)  # Dauer jeder Farbe pro Pixel
         pixels.fill((176, 48, 96))  # Lichterkette komplett rot bzw. pink einfärben
         print(pixels)  # weil sonst die Lichterkette crasht
         pixels.show()
         time.sleep(0.0001)
-        continue_playing(tracks)
+        if continue_playing(tracks, next_track_index) == False:
+            break
 
 else:
     ### BRUNNEN ###
@@ -249,12 +272,5 @@ else:
     pygame.mixer.music.stop()
     ### LED LICHTERKETTE ###
     pixels.fill((0, 0, 0))  # Ausschalten der Lichterkette
-
-
-
-
-
-
-
 
 
