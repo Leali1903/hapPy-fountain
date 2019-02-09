@@ -206,26 +206,47 @@ folder = ""
 wheel_function = None
 if eye_input == 'happy':
     os.system(ON)
-    folder = "/home/pi/music/happy/"
-    wheel_function = wheel_blue
+    folder = "/home/pi/Music/happy/"
+    wheel_function = wheel_color
 elif eye_input == 'sad':
     os.system(ON)
-    folder = "/home/pi/music/sad/"
+    folder = "/home/pi/Music/sad/"
     wheel_function = wheel_blue
 elif eye_input == 'chillen':
     os.system(ON)
-    folder = "/home/pi/music/chillen/"
+    folder = "/home/pi/Music/chillen/"
     wheel_function = None
 elif eye_input == 'party':
     os.system(OFF)
-    folder = "/home/pi/music/party/"
+    folder = "/home/pi/Music/party/"
     wheel_function = None
 
 tracks = find_tracks(folder)
 tracks_iterator = iter(tracks)
 while True:
-    cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
-    if continue_playing(tracks_iterator) == False:
+    if wheel_function:
+        cycle(0.001, wheel_function)  # Farbübergänge in bunt in Kreisform
+    elif eye_input == 'party':
+        for num in range(PIXEL_COUNT):
+            # bunter Lichtstrahl durch Lichterkette
+            pixels[num] = blink_color(PIXEL_COUNT)
+            pixels.show()
+            # Dauer jeder Farbe pro Pixel
+            time.sleep(0.0001)
+        # Lichterkette komplett rot bzw. pink einfärben
+        pixels.fill((176, 48, 96))
+        # weil sonst die Lichterkette crasht
+        print(pixels)
+        pixels.show()
+        time.sleep(0.0001)
+    elif eye_input == 'chillen':
+        for num in range(PIXEL_COUNT):
+            pixel_index = (num * 256 // PIXEL_COUNT)
+            # einmal je nach Postion des Pixels einfärben
+            pixels[num] = chill_color(pixel_index & 255)
+        print(pixels)
+        pixels.show()
+    if not continue_playing(tracks_iterator):
         break
 
 
