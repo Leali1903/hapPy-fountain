@@ -31,7 +31,8 @@ pixels = neopixel.NeoPixel(pixel_pin, PIXEL_COUNT, brightness=0.2, auto_write=Fa
 
 # Socket für Datenempfang
 HOST = '172.16.107.164'
-PORT = 60005
+PORT = 60003
+stop_input = []
 
 ###################### FUNKTIONEN DEFINIEREN ######################
 
@@ -61,19 +62,18 @@ def wheel_color(pos):
 
 # Funktion zur Bewegung der Farben im Sad & Happy-Modus
 def cycle(wait, wheel):
-    while True:
-        for j in range(255):
-            for i in range(num_pixels):
-                pixel_index = (i * 256 // num_pixels) + j  # bewegen des 'wheels'
-                pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
-            if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
-                print(pixels)
-                pixels.show()
-                time.sleep(wait)
-        if wheel == wheel_blue:  # 'Wasserbewegung' für das blaue Wheel
+    for j in range(255):
+        for i in range(PIXEL_COUNT):
+            pixel_index = (i * 256 // PIXEL_COUNT) + j  # bewegen des 'wheels'
+            pixels[i] = wheel(pixel_index & 255)  # einspeichern der Farben aus der Wheel-Funktion
+        if wheel == wheel_color:  # kreisförmige Bewegung für das bunte Wheel
             print(pixels)
             pixels.show()
             time.sleep(wait)
+    if wheel == wheel_blue:  # 'Wasserbewegung' für das blaue Wheel
+        print(pixels)
+        pixels.show()
+        time.sleep(wait)
 
 
 # Funktion zur Verteilung der Farben im Sad-Modus
@@ -102,7 +102,7 @@ def wheel_blue(pos):
 
 # Funktion zur Verteilung der Farben im Party-Modus
 def blink_color(pos):
-    if pos < 0 or pos > num_pixels:
+    if pos < 0 or pos > PIXEL_COUNT:
         r = b = g = 0
     elif pos < 10 or pos > 50:  # für erste und letzte 10 Pixel generieren einer
         r = random.randint(0, 255)  # zufälligen Farbe mit wahrscheinlich höherem Rotanteil
@@ -157,6 +157,7 @@ def find_tracks(folder):
 
 
 def play_tracks(tracks):
+    #random.shuffle(tracks)
     tracksIterator = iter(tracks)
     firstTrack = next(tracksIterator)
     pygame.mixer.music.load(firstTrack)
@@ -180,7 +181,7 @@ def continue_playing(tracks, next_track_index):
 def receive_data():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
-        s.listen()
+        s.listen(2)
         print('Listening for connections')
         conn, addr = s.accept()
         with conn:
@@ -193,10 +194,16 @@ def receive_data():
 
 ###################### STEUERUNG JE NACH INPUT ######################
 # Empfangen des Eyetracking Inputs
-eye_input = receive_data()
+#eye_input = receive_data()
+PORT = PORT + 1
+
+eye_input = 'happy'
 
 # Einschalten des pygame-mixers für die Musik
 pygame.mixer.init()
+
+
+
 
 # Inputschleife
 if eye_input == 'happy':
@@ -205,14 +212,12 @@ if eye_input == 'happy':
     ### MUSIK ###
     folder = "/home/pi/Music/happy/"
     tracks = find_tracks(folder)
-    play_tracks(tracks)
     next_track_index = 0
 # ### LED LICHTERKETTE ###
-    while True:  # weil es sich immer weiter bewegen soll.
-        cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
+    while True:# weil es sich immer weiter bewegen soll.
+        # cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
         if continue_playing(tracks, next_track_index) == False:
             break
-
 elif eye_input == 'sad':
     ### BRUNNEN ###
     os.system(ON)
@@ -237,12 +242,13 @@ elif eye_input == 'chillen':
     next_track_index = 0
     ### LED LICHTERKETTE ###
     while True:
-        for num in range(PIXEL_COUNT):
-            pixels[PIXEL_COUNT] = chill_color(PIXEL_COUNT)
-            pixels.show() # einmal je nach Postion des Pixels einfärben
+        for i in range(PIXEL_COUNT):
+            pixel_index = (i * 256 // PIXEL_COUNT) 
+            pixels[i] = chill_color(pixel_index & 255) 
+        print(pixels)
+        pixels.show() # einmal je nach Postion des Pixels einfärben
         if continue_playing(tracks, next_track_index) == False:
             break
-
 elif eye_input == 'party':
     ### BRUNNEN ###
     os.system(OFF)  # falls Brunnen schon an.
@@ -252,9 +258,9 @@ elif eye_input == 'party':
     play_tracks(tracks)
     next_track_index = 0
     ### LED LICHTERKETTE ###
-    while True:  # weil es sich immer weiter bewegen soll.
+    while True:# weil es sich immer weiter bewegen soll.
         for num in range(PIXEL_COUNT):
-            pixels[PIXEL_COUNT] = blink_color(PIXEL_COUNT)
+            pixels[num] = blink_color(PIXEL_COUNT)
             #pixels[num] = blink_color(num)  # bunter Lichtstrahl durch Lichterkette
             pixels.show()
             time.sleep(0.0001)  # Dauer jeder Farbe pro Pixel
@@ -265,12 +271,10 @@ elif eye_input == 'party':
         if continue_playing(tracks, next_track_index) == False:
             break
 
-else:
-    ### BRUNNEN ###
-    os.system(OFF)
-    ### MUSIK ###
-    pygame.mixer.music.stop()
-    ### LED LICHTERKETTE ###
-    pixels.fill((0, 0, 0))  # Ausschalten der Lichterkette
-
-
+### BRUNNEN ###
+os.system(OFF)
+### MUSIK ###
+pygame.mixer.music.stop()
+### LED LICHTERKETTE ###
+pixels.fill((0, 0, 0))  # Ausschalten der Lichterkette
+    
