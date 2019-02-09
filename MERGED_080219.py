@@ -143,7 +143,6 @@ def chill_color(pos):
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
 
-
 ### MUSIK FUNKTIONEN ###
 # Funktion zum suchen und abspielen der Tracks
 def find_tracks(folder):
@@ -166,14 +165,15 @@ def play_tracks(tracks):
         pygame.mixer.music.queue(track)
 
 
-def continue_playing(tracks, next_track_index):
+def continue_playing(tracks_iterator):
     if pygame.mixer.music.get_busy():
         return True
-    if next_track_index >= len(tracks):
+    try:
+        next_track = next(tracks_iterator)
+        pygame.mixer.music.load(next_track)
+        pygame.mixer.music.play()
+    except StopIteration:
         return False
-    pygame.mixer.music.load(tracks[next_track_index])
-    pygame.mixer.music.play()
-    next_track_index += 1
     return True
 
 
@@ -202,74 +202,98 @@ eye_input = 'happy'
 # Einschalten des pygame-mixers für die Musik
 pygame.mixer.init()
 
-
-
-
-# Inputschleife
+folder = ""
+wheel_function = None
 if eye_input == 'happy':
-    ### BRUNNEN ###
     os.system(ON)
-    ### MUSIK ###
-    folder = "/home/pi/Music/happy/"
-    tracks = find_tracks(folder)
-    next_track_index = 0
-# ### LED LICHTERKETTE ###
-    while True:# weil es sich immer weiter bewegen soll.
-        # cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
-        if continue_playing(tracks, next_track_index) == False:
-            break
+    folder = "/home/pi/music/happy/"
+    wheel_function = wheel_blue
 elif eye_input == 'sad':
-    ### BRUNNEN ###
     os.system(ON)
-    ### MUSIK ###
-    folder = "/home/pi/Music/sad/"
-    tracks = find_tracks(folder)
-    play_tracks(tracks)
-    next_track_index = 0
-    ### LED LICHTERKETTE ###
-    while True:  # weil es sich immer weiter bewegen soll.
-        cycle(0.001, wheel_blue)  # zum Verändern der Blautöne über die Zeit pro Pixel
-        continue_playing(tracks)
-        if continue_playing(tracks, next_track_index) == False:
-            break
+    folder = "/home/pi/music/sad/"
+    wheel_function = wheel_blue
 elif eye_input == 'chillen':
-    ### BRUNNEN ###
     os.system(ON)
-    ### MUSIK ###
-    folder = "/home/pi/Music/chillen/"
-    tracks = find_tracks(folder)
-    play_tracks(tracks)
-    next_track_index = 0
-    ### LED LICHTERKETTE ###
-    while True:
-        for i in range(PIXEL_COUNT):
-            pixel_index = (i * 256 // PIXEL_COUNT) 
-            pixels[i] = chill_color(pixel_index & 255) 
-        print(pixels)
-        pixels.show() # einmal je nach Postion des Pixels einfärben
-        if continue_playing(tracks, next_track_index) == False:
-            break
+    folder = "/home/pi/music/chillen/"
+    wheel_function = None
 elif eye_input == 'party':
-    ### BRUNNEN ###
-    os.system(OFF)  # falls Brunnen schon an.
-    ### MUSIK ###
-    folder = "/home/pi/Music/party/"
-    tracks = find_tracks(folder)
-    play_tracks(tracks)
-    next_track_index = 0
-    ### LED LICHTERKETTE ###
-    while True:# weil es sich immer weiter bewegen soll.
-        for num in range(PIXEL_COUNT):
-            pixels[num] = blink_color(PIXEL_COUNT)
-            #pixels[num] = blink_color(num)  # bunter Lichtstrahl durch Lichterkette
-            pixels.show()
-            time.sleep(0.0001)  # Dauer jeder Farbe pro Pixel
-        pixels.fill((176, 48, 96))  # Lichterkette komplett rot bzw. pink einfärben
-        print(pixels)  # weil sonst die Lichterkette crasht
-        pixels.show()
-        time.sleep(0.0001)
-        if continue_playing(tracks, next_track_index) == False:
-            break
+    os.system(OFF)
+    folder = "/home/pi/music/party/"
+    wheel_function = None
+
+tracks = find_tracks(folder)
+tracks_iterator = iter(tracks)
+while True:
+    cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
+    if continue_playing(tracks_iterator) == False:
+        break
+
+
+# # Inputschleife
+# if eye_input == 'happy':
+#     ### BRUNNEN ###
+#     os.system(ON)
+#     ### MUSIK ###
+#     folder = "/home/pi/Music/happy/"
+#     tracks = find_tracks(folder)
+#     tracks_iterator = iter(tracks)
+# # ### LED LICHTERKETTE ###
+#     while True:
+#         cycle(0.001, wheel_color)  # Farbübergänge in bunt in Kreisform
+#         if continue_playing(tracks_iterator) == False:
+#             break
+# elif eye_input == 'sad':
+#     ### BRUNNEN ###
+#     os.system(ON)
+#     ### MUSIK ###
+#     folder = "/home/pi/Music/sad/"
+#     tracks = find_tracks(folder)
+#     play_tracks(tracks)
+#     next_track_index = 0
+#     ### LED LICHTERKETTE ###
+#     while True:  # weil es sich immer weiter bewegen soll.
+#         cycle(0.001, wheel_blue)  # zum Verändern der Blautöne über die Zeit pro Pixel
+#         continue_playing(tracks)
+#         if continue_playing(tracks, next_track_index) == False:
+#             break
+# elif eye_input == 'chillen':
+#     ### BRUNNEN ###
+#     os.system(ON)
+#     ### MUSIK ###
+#     folder = "/home/pi/Music/chillen/"
+#     tracks = find_tracks(folder)
+#     play_tracks(tracks)
+#     next_track_index = 0
+#     ### LED LICHTERKETTE ###
+#     while True:
+#         for i in range(PIXEL_COUNT):
+#             pixel_index = (i * 256 // PIXEL_COUNT)
+#             pixels[i] = chill_color(pixel_index & 255)
+#         print(pixels)
+#         pixels.show() # einmal je nach Postion des Pixels einfärben
+#         if continue_playing(tracks, next_track_index) == False:
+#             break
+# elif eye_input == 'party':
+#     ### BRUNNEN ###
+#     os.system(OFF)  # falls Brunnen schon an.
+#     ### MUSIK ###
+#     folder = "/home/pi/Music/party/"
+#     tracks = find_tracks(folder)
+#     play_tracks(tracks)
+#     next_track_index = 0
+#     ### LED LICHTERKETTE ###
+#     while True:# weil es sich immer weiter bewegen soll.
+#         for num in range(PIXEL_COUNT):
+#             pixels[num] = blink_color(PIXEL_COUNT)
+#             #pixels[num] = blink_color(num)  # bunter Lichtstrahl durch Lichterkette
+#             pixels.show()
+#             time.sleep(0.0001)  # Dauer jeder Farbe pro Pixel
+#         pixels.fill((176, 48, 96))  # Lichterkette komplett rot bzw. pink einfärben
+#         print(pixels)  # weil sonst die Lichterkette crasht
+#         pixels.show()
+#         time.sleep(0.0001)
+#         if continue_playing(tracks, next_track_index) == False:
+#             break
 
 ### BRUNNEN ###
 os.system(OFF)
