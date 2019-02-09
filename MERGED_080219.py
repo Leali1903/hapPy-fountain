@@ -5,6 +5,8 @@ import time
 import random
 import pygame
 import socket
+import threading
+
 
 ###################### KONSTANTEN UND EINSTELLUNGEN ######################
 
@@ -32,7 +34,7 @@ pixels = neopixel.NeoPixel(pixel_pin, PIXEL_COUNT, brightness=0.2, auto_write=Fa
 # Socket für Datenempfang
 HOST = '172.16.107.164'
 PORT = 60003
-stop_input = []
+RUNNING = True
 
 ###################### FUNKTIONEN DEFINIEREN ######################
 
@@ -122,6 +124,24 @@ def blink_color(pos):
     return (r, g, b) if ORDER == neopixel.RGB or ORDER == neopixel.GRB else (r, g, b, 0)
 
 
+def fill_red():
+    # Lichterkette komplett rot bzw. pink einfärben
+    pixels.fill((176, 48, 96))
+    # weil sonst die Lichterkette crasht
+    print(pixels)
+    pixels.show()
+
+
+def fill_blink(start, end):
+    updater = 1 if start <= end else -1
+    for num in range(start, end, updater):
+        # bunter Lichtstrahl durch Lichterkette
+        pixels[num] = blink_color(PIXEL_COUNT)
+        pixels.show()
+        # Dauer jeder Farbe pro Pixel
+        time.sleep(0.0001)
+
+
 # Funktion zur Verteilung der Farben im Chill-Modus
 def chill_color(pos):
     if pos < 0 or pos > 255:
@@ -169,17 +189,19 @@ def continue_playing(tracks_iterator):
 
 ### SOCKET ###
 def receive_data():
+    global RUNNING
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
-        s.listen(2)
+        s.listen()
         print('Listening for connections')
         conn, addr = s.accept()
         with conn:
             print('Connected by', addr)
-            eye_input = conn.recv(1024).decode('utf-8')
-            # conn.sendall(data)
-            print('Received data from client', repr(eye_input))
-    return eye_input
+            received_data = conn.recv(1024).decode('utf-8')
+            print('Received data from client ', repr(received_data))
+    if received_data == 'stop':
+        RUNNING = False
+    return received_data
 
 
 ###################### STEUERUNG JE NACH INPUT ######################
@@ -211,36 +233,24 @@ elif eye_input == 'party':
     folder = "/home/pi/Music/party/"
     wheel_function = None
 
+# Auf weiteren Input hoeren im Hintergrund
+thread = threading.Thread(target=receive_data)
+thread.daemon = True
+thread.start()
+
 tracks = find_tracks(folder)
 random.shuffle(tracks)
 tracks_iterator = iter(tracks)
-while True:
+
+while RUNNING:
     if wheel_function:
         cycle(0.001, wheel_function)  # Farbübergänge in bunt in Kreisform
     elif eye_input == 'party':
-        for num in range(PIXEL_COUNT):
-            # bunter Lichtstrahl durch Lichterkette
-            pixels[num] = blink_color(PIXEL_COUNT)
-            pixels.show()
-            # Dauer jeder Farbe pro Pixel
-            time.sleep(0.0001)
-        # Lichterkette komplett rot bzw. pink einfärben
-        pixels.fill((176, 48, 96))
-        # weil sonst die Lichterkette crasht
-        print(pixels)
-        pixels.show()
+        fill_blink(0, PIXEL_COUNT)
+        fill_red()
         time.sleep(0.0001)
-        for num in range(PIXEL_COUNT-1, 0, -1):
-            # bunter Lichtstrahl durch Lichterkette
-            pixels[num] = blink_color(PIXEL_COUNT)
-            pixels.show()
-            # Dauer jeder Farbe pro Pixel
-            time.sleep(0.0001)
-        # Lichterkette komplett rot bzw. pink einfärben
-        pixels.fill((176, 48, 96))
-        # weil sonst die Lichterkette crasht
-        print(pixels)
-        pixels.show()
+        fill_blink(PIXEL_COUNT, 0)
+        fill_red()
         time.sleep(0.0001)
     elif eye_input == 'chillen':
         for num in range(PIXEL_COUNT):
