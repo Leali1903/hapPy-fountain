@@ -32,6 +32,8 @@ BLACK = (0, 0, 0)                                              # schwarz für Bo
 WHITE = (255, 255, 255)                                        # weiß für Boxen & Texte
 HF_BLUE = (79, 154, 196)
 HF_BLUE_LIGHT = (120, 200, 200)
+RED = (255, 0, 0)
+RED_LIGHT = (240, 80, 40)
 
 MYFONT = pygame.font.SysFont('Comic Sans MS', 30)              # Schriftart & Größe wählen
 MYFONT_BIG = pygame.font.SysFont('Comic Sans MS', 70)          # Schriftart & Größe wählen
@@ -92,7 +94,9 @@ FPS = 360
 
 ### SOCKET ###
 HOST = '172.16.107.164'  # The server's hostname or IP address
-PORT = 60005
+PORT = 60009
+
+stop = 'stop'
 
 ######################### FUNCTIONS #########################
 
@@ -125,6 +129,27 @@ def button(action):                                         # Funktion interakti
 
     # Text Button
     textsurf_next, textrect = text_central('WEITER')
+    textrect.center = ((SCREEN_WIDTH * (6 / 8) + (BUTTON_WIDTH / 2)), (SCREEN_HEIGHT * (7 / 9) + (BUTTON_HEIGHT / 2)))
+    screen.blit(textsurf_next, textrect)
+
+
+def stop_button():                                         # Funktion interaktiver Klick-Button
+    # Mausposition & click
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    # Interaktivität & Farbe des Buttons in Abhängigkeit der Mausposition & Click
+    if SCREEN_HEIGHT * (7 / 9) + BUTTON_HEIGHT > mouse[1] > SCREEN_HEIGHT * (7 / 9) and SCREEN_WIDTH * (6 / 8) + BUTTON_WIDTH > mouse[0] > SCREEN_WIDTH * (6 / 8):
+        pygame.draw.rect(screen, RED_LIGHT, ((SCREEN_WIDTH * (6 / 8)), (SCREEN_HEIGHT * (7 / 9)), BUTTON_WIDTH, BUTTON_HEIGHT))
+        if click[0] == 1:
+            send_data_stop(stop)
+            pygame.quit()
+            exit()
+    else:
+        pygame.draw.rect(screen, RED, ((SCREEN_WIDTH * (6 / 8)), (SCREEN_HEIGHT * (7 / 9)), BUTTON_WIDTH, BUTTON_HEIGHT))
+
+    # Text Button
+    textsurf_next, textrect = text_central('HALT STOPP!')
     textrect.center = ((SCREEN_WIDTH * (6 / 8) + (BUTTON_WIDTH / 2)), (SCREEN_HEIGHT * (7 / 9) + (BUTTON_HEIGHT / 2)))
     screen.blit(textsurf_next, textrect)
 
@@ -329,8 +354,12 @@ def endloop(data):
         elif data == 'chillen':
             screen.blit(chillen_background, (0, 0))
 
+        stop_button()
+
         screen.blit(TEXT_HF, (100, 100))
         screen.blit(hf_logo, (SCREEN_WIDTH*(7/8), 100))
+        mouse_cursor()
+
         pygame.display.update()
         CLOCK.tick(FPS)                                          # frames pro Sekunde
 
@@ -379,6 +408,13 @@ def send_data(data_input):
         s.connect((HOST, PORT))
         s.sendall(data_input.encode('utf-8'))
         data = s.recv(1024)
+
+def send_data_stop(stop_input):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT+1))
+        s.sendall(stop_input.encode('utf-8'))
+        data = s.recv(1024)
+
 
 
 ######################### AUSFÜHRUNG: EYETRACKING UND GUI #########################
