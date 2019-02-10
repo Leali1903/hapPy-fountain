@@ -206,10 +206,7 @@ def receive_data():
 
 ###################### STEUERUNG JE NACH INPUT ######################
 # Empfangen des Eyetracking Inputs
-#eye_input = receive_data()
-PORT = PORT + 1
-
-eye_input = 'happy'
+eye_input = receive_data()
 
 # Einschalten des pygame-mixers für die Musik
 pygame.mixer.init()

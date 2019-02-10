@@ -62,13 +62,21 @@
 #     client_program()
 
 import socket
+import time
 
 HOST = '172.16.107.164'  # The server's hostname or IP address
-PORT = 60002
+EYE_INPUT_PORT = 60003
+STOP_PORT = 60004
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    s.sendall(b'Hello, world')
-    data = s.recv(1024)
+    s.connect((HOST, EYE_INPUT_PORT))
+    print('Sending happy')
+    s.sendall('happy'.encode('utf-8'))
 
-print('Received', repr(data))
+print('Sleeping with Lea')
+time.sleep(6)
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((HOST, STOP_PORT))
+    print('Sending stop')
+    s.sendall('stop'.encode('utf-8'))
