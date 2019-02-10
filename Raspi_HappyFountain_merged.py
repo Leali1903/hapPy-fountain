@@ -5,7 +5,7 @@ import neopixel
 import random
 import pygame
 
-eye_input = 'party'
+
 
 ###################### KONSTANTEN UND EINSTELLUNGEN ######################
 
