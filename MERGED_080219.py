@@ -33,7 +33,8 @@ pixels = neopixel.NeoPixel(pixel_pin, PIXEL_COUNT, brightness=0.2, auto_write=Fa
 
 # Socket für Datenempfang
 HOST = '172.16.107.164'
-PORT = 60003
+EYE_INPUT_PORT = 60003
+STOP_PORT = 60004
 RUNNING = True
 
 ###################### FUNKTIONEN DEFINIEREN ######################
@@ -188,10 +189,9 @@ def continue_playing(tracks_iterator):
 
 
 ### SOCKET ###
-def receive_data():
-    global RUNNING
+def receive_eye_input_data():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
+        s.bind((HOST, EYE_INPUT_PORT))
         s.listen()
         print('Listening for connections')
         conn, addr = s.accept()
@@ -199,14 +199,26 @@ def receive_data():
             print('Connected by', addr)
             received_data = conn.recv(1024).decode('utf-8')
             print('Received data from client ', repr(received_data))
-    if received_data == 'stop':
-        RUNNING = False
     return received_data
 
 
+def receive_stop_data():
+    global RUNNING
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, STOP_PORT))
+        s.listen()
+        print('Listening for connections')
+        conn, addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            received_data = conn.recv(1024).decode('utf-8')
+            print('Received data from client ', repr(received_data))
+            RUNNING = False
+    return received_data
+
 ###################### STEUERUNG JE NACH INPUT ######################
 # Empfangen des Eyetracking Inputs
-eye_input = receive_data()
+eye_input = receive_eye_input_data()
 
 # Einschalten des pygame-mixers für die Musik
 pygame.mixer.init()
@@ -231,7 +243,7 @@ elif eye_input == 'party':
     wheel_function = None
 
 # Auf weiteren Input hoeren im Hintergrund
-thread = threading.Thread(target=receive_data)
+thread = threading.Thread(target=receive_stop_data)
 thread.daemon = True
 thread.start()
 
@@ -241,7 +253,8 @@ tracks_iterator = iter(tracks)
 
 while RUNNING:
     if wheel_function:
-        cycle(0.001, wheel_function)  # Farbübergänge in bunt in Kreisform
+        time.sleep(0.0001)
+        # cycle(0.001, wheel_function)  # Farbübergänge in bunt in Kreisform
     elif eye_input == 'party':
         fill_blink(0, PIXEL_COUNT)
         fill_red()
@@ -259,3 +272,7 @@ while RUNNING:
     if not continue_playing(tracks_iterator):
         break
 
+pygame.mixer.music.stop()
+os.system(OFF)
+pixels.fill((0,0,0))
+pixels.show()
