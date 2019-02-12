@@ -1,5 +1,5 @@
-#from __future__ import print_function  # import für ET
-#from api import EyeXInterface
+from __future__ import print_function  # import für ET
+from api import EyeXInterface
 
 import pygame                                                  # Pygame-Modul importieren für GUI
 from pygame import mixer
@@ -173,17 +173,16 @@ def musicloopmove():
         movingexit = False
         while not movingexit:
             pygame.event.get()
-            #eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]  # START des Eyetrackings
+            eye_api.on_event += [lambda coordinates: eyetracking(coordinates)]  # START des Eyetrackings
             screen.fill(BLACK)
 
-            if 0 < y < 1080:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
-                x += x_move
-                y += y_move
-                x2 -= x_move
-                y2 -= y_move
+            if 0 < y2 < 1080:  # Grenze des Screens, an der die Stimmungs-Images stehen bleiben sollen
+                x -= x_move
+                y -= y_move
+                x2 += x_move
+                y2 += y_move
 
             else:
-                eye_y = [1, 4, 10]
                 movingexit = True
                 eye_input = data_comparison(eye_x, eye_y)
                 x = x
@@ -251,7 +250,7 @@ def endloop(data):
 def data_comparison(data_x, data_y):
     #gui_movement()
 
-    #eye_movement_x = data_x[0] - data_x[-1]
+    eye_movement_x = data_x[0] - data_x[-1]
     eye_movement_y = data_y[0] - data_y[-1]
 
     if eye_movement_y < 0:
@@ -266,14 +265,15 @@ def data_comparison(data_x, data_y):
 
 ### EYETRACKING ###
 def eyetracking(coordinates):           # Function zum Auslesen der Koordinaten
+    print(coordinates.y)
     eye_x.append(coordinates.x)  # Liste der x-Koordinaten
     eye_y.append(coordinates.y)  # Liste der y-Koordinaten
     return eye_x, eye_y
 
 
 ### Eyetracking ###
-#lib_location = 'C:/Program Files (x86)/Tobii/Tobii EyeX Interaction/Tobii.EyeX.Client.dll'          # Speicherort dll-Datei
-#eye_api = EyeXInterface(lib_location)               # Zugriff auf die dll-Datei des EyeX mittels Function EyeXInterface aus api.py
+lib_location = 'C:/Program Files (x86)/Tobii/Tobii EyeX Interaction/Tobii.EyeX.Client.dll'          # Speicherort dll-Datei
+eye_api = EyeXInterface(lib_location)               # Zugriff auf die dll-Datei des EyeX mittels Function EyeXInterface aus api.py
 
 # Pygame initialisieren
 pygame.init()
@@ -281,11 +281,11 @@ pygame.font.init()                                             # Textmodul initi
 mixer.init()                                                   # Soundmodul initialisieren
 
 # Bildschirmeinstellungen
-SCREEN_HEIGHT = 500
-SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-screen = pygame.display.set_mode(SCREEN_SIZE)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
+screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN)      # pygame-Fenster fullscreen & = Bildschirmeinstellungen
 
 # Farb- & Texteinstellungen
 BLACK = (0, 0, 0)                                              # schwarz für Boxen & Texte
