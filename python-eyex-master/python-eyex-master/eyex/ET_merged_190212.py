@@ -1,16 +1,14 @@
-# import für ET
-from __future__ import print_function
-from api import EyeXInterface
-# import für GUI
+from __future__ import print_function                   # import für ET
+from api import EyeXInterface                           # import für GUI
 import pygame
 from pygame.locals import *
-# für Socket (senden von Abgleich-Daten an Pi)
-import socket
+import socket                                           # import für Socket (senden von Abgleich-Daten an Pi)
 
 ######################### KONSTANTEN & EINSTELLUNGEN #########################
 ### Eyetracking ###
 # Speicherort dll-Datei
 lib_location = 'C:/Program Files (x86)/Tobii/Tobii EyeX Interaction/Tobii.EyeX.Client.dll'
+
 # Zugriff auf die dll-Datei des EyeX mittels Function EyeXInterface aus api.py
 eye_api = EyeXInterface(lib_location)
 
@@ -21,8 +19,8 @@ pygame.init()
 pygame.font.init()
 
 # Bildschirmeinstellungen
-SCREEN_HEIGHT = 750
-SCREEN_WIDTH = 1420
+SCREEN_HEIGHT = 1080
+SCREEN_WIDTH = 1920
 CENTER = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 # pygame-Fenster fullscreen & = Bildschirmeinstellungen
@@ -84,7 +82,7 @@ chillen_background = pygame.transform.scale(chillen_background, SCREEN_SIZE)
 #Text für das Endfenster
 TEXT_HF = MYFONT_BIG.render('Genieße deinen hapPy(i) fountain-Moment!', False, HF_BLUE)
 
-# Initialisierung des Logo
+# Logo
 hf_logo = pygame.image.load('happy(i) fountain.jpeg')
 hf_logo = pygame.transform.scale(hf_logo, (180, 110))
 
@@ -93,7 +91,7 @@ CLOCK = pygame.time.Clock()
 FPS = 360
 
 ### SOCKET ###
-# Des Server's hostname oder IP Addresse
+# Servers hostname oder IP Addresse
 HOST = '172.16.107.164'
 PORT = 60005
 
@@ -207,11 +205,6 @@ def mood_loop():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mood_exit = True
                 mood_loop_move()
-                #eye_input = data_comparison(eye_x, eye_y)
-                #send_data(eye_input)
-                #print(eye_input)
-                ### passender Bildschirmschoner ###
-                #endloop(eye_input)
         # Bildschirm schwarz füllen
         screen.fill(BLACK)
         # Stimmungen anzeigen: Startpositionen (berechnet aus Screensize & Zentrierung)
@@ -242,7 +235,8 @@ def mood_loop_move():
             if event.type == pygame.QUIT:
                 mood_move_exit = True
             if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_q, pygame.K_ESCAPE):  # nach Klick auf Escape oder q
+                # nach Klick auf Escape oder q, beenden
+                if event.key in (pygame.K_q, pygame.K_ESCAPE):
                     pygame.quit()
                     raise SystemExit
         # Bildschirm schwarz einfärben
@@ -260,7 +254,7 @@ def mood_loop_move():
         screen.blit(sad, (x_sad, y_sad))
         screen.blit(party, (x_party, y_party))
         screen.blit(chillen, (x_chillen, y_chillen))
-        #Koordninaten/Pixel um die sich die Icons pro Sekunde bewegen sollen
+        #Koordinaten/Pixel um die sich die Icons pro screen-blit bewegen sollen
         x = 2
         y = 1
 
@@ -306,13 +300,12 @@ def mood_loop_move():
 def endloop(data):
     endexit = False
     while not endexit:
-
         # Einstellungen zum Beenden der GUI
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 endexit = True
             if event.type == pygame.KEYDOWN:
-                # nach Klick auf Escape oder q
+                # nach Klick auf Escape oder q, beenden
                 if event.key in (pygame.K_q, pygame.K_ESCAPE):
                     pygame.quit()
                     raise SystemExit
