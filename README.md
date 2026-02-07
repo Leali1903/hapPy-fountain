@@ -1,2 +1,2 @@
 # hapPy-fountain
-Rasberry-Pi Projekt
+Rasberry-Pi University Project for a eye-tracker controlled fountain with light installation written in python.
